@@ -116,8 +116,9 @@
 <section>
   <div class="wrap">
     <h2 class="h">The problem</h2>
-    <p>Sending money to China in local currency (CNY) requires a <b>CNAPS code</b> — a 12-digit identifier from the China National Advanced Payment System that routes a domestic RMB payment to the exact receiving bank branch. The rail genuinely needs it. Most processors quietly resolve it in the background; they've done the work of mapping banks and branches to their codes so the customer never sees it.</p>
-    <p>Afriex hadn't. Our first attempt at the feature simply exposed the CNAPS field and asked the sender to supply the code, plus branch and postal details. It shipped, but reception was lukewarm — customers were already used to sending to China without ever touching a CNAPS code, so being asked to hunt one down felt like a step backwards. Many abandoned.</p>
+    <p>Sending money to China in local currency (CNY) requires a <b>CNAPS code</b> — a 12-digit identifier from the China National Advanced Payment System that routes a domestic RMB payment to the exact receiving bank branch. The rail genuinely needs it. With many payout providers it's resolved in the background: the provider has mapped banks and branches to their codes, so neither the business nor the customer ever sees it.</p>
+    <p>The payout processor Afriex had integrated with for the China corridor didn't offer that mapping. It required a CNAPS code with every payout but left the work of sourcing and mapping it to us. Our first attempt passed that gap straight through to the customer — the flow simply exposed the CNAPS field and asked the sender to supply the code, plus branch and postal details. It shipped, but reception was lukewarm: customers were already used to sending to China without ever touching a CNAPS code, so being asked to hunt one down felt like a step backwards. Many abandoned.</p>
+    <p>The realisation was that this mapping was now <b>Afriex's responsibility to own</b>, not the customer's to satisfy. If the partner wouldn't resolve CNAPS for us, we would build the mapping ourselves and hide it behind a simple flow.</p>
     <blockquote>The requirement wasn't the problem. Making the customer satisfy it was. The fix was to move the complexity from the sender to the product.</blockquote>
   </div>
 </section>
@@ -151,7 +152,7 @@
 <section>
   <div class="wrap">
     <h2 class="h">My role</h2>
-    <p>I owned the recovery of this feature: diagnosing why the first release underperformed, reframing the problem as a data-mapping job rather than a UI one, and specifying the guided flow. I defined the reference data model (bank → province → city → branch → CNAPS + postal), scoped what the sender must still provide versus what we resolve for them, and built the PRD and interactive prototype to align engineering and design.</p>
+    <p>I owned the recovery of this feature: diagnosing why the first release underperformed, and recognising that the gap sat with the integrated payout partner, who didn't resolve CNAPS on our behalf. I reframed the work as a data-mapping job Afriex needed to own rather than a UI tweak. I defined the reference data model (bank → province → city → branch → CNAPS + postal), scoped what the sender must still provide versus what we resolve for them, and built the PRD and interactive prototype to align engineering and design.</p>
   </div>
 </section>
 
@@ -159,7 +160,7 @@
   <div class="wrap">
     <h2 class="h">Approach</h2>
     <ol class="steps">
-      <li><b>Reframed it as a data problem</b>The customer shouldn't do routing lookups — the product should. That meant sourcing every supported bank in China, its branches, their locations, and mapping each to its CNAPS and postal code.</li>
+      <li><b>Reframed it as a data problem we had to own</b>The partner wouldn't resolve CNAPS for us, and the customer shouldn't do routing lookups — so the product had to. That meant Afriex sourcing every supported bank in China, its branches, their locations, and mapping each to its CNAPS and postal code.</li>
       <li><b>Built the reference dataset</b>~148,000 branch records across 127 banks and 31 provinces, each mapped to a CNAPS code and postal code — split into selected (major) banks and other banks, and structured for cascading lookups.</li>
       <li><b>Designed cascading dropdowns</b>Each selection narrows the next: choosing a bank filters provinces, then cities, then branches. Selecting the branch auto-fills the CNAPS and postal code — read-only, so they can't be mistyped.</li>
       <li><b>Kept only what the sender must provide</b>Sender details are already on file. The sender only confirms the beneficiary's name, ID type/number and account number, which are required for compliance and crediting.</li>

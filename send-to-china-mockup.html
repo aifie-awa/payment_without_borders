@@ -211,7 +211,7 @@
       <div class="side">
         <div class="panel">
           <h3>The friction we removed</h3>
-          <p class="cap">First attempt shipped raw: senders had to find a 12-digit CNAPS code themselves. It flopped — they were used to sending without it. So we did the mapping for them.</p>
+          <p class="cap">Our payout partner didn't resolve CNAPS for us, so the first attempt passed the gap to the customer: senders had to find a 12-digit code themselves. It flopped. So Afriex took on the mapping instead.</p>
           <div class="cmp">
             <div class="cmpcard old">
               <div class="tt">✕ Old way</div>
@@ -253,8 +253,8 @@
     <div class="panel" style="max-width:760px">
       <h3>What is a CNAPS code, and why did the first attempt struggle?</h3>
       <p class="cap" style="font-size:14px">CNAPS (China National Advanced Payment System) codes are 12-digit identifiers that route a domestic RMB payment to the exact bank branch. For a cross-border transfer settling in local currency (CNY), the receiving bank needs the correct CNAPS code to credit the right branch.</p>
-      <p class="cap" style="font-size:14px">When Afriex first exposed the CNAPS field, it asked senders to supply that code themselves. But senders were used to sending to China without ever touching a CNAPS code — competitors quietly handle the mapping in the background. Surfacing the raw requirement felt like a step backwards, and adoption was lukewarm.</p>
-      <p class="cap" style="font-size:14px;margin-bottom:0">The fix isn't to remove the requirement — the receiving rail still needs it — but to <b>do the work for the sender</b>. Afriex maps every supported bank, branch and location to its CNAPS and postal code, so the sender just selects from dropdowns. The complexity moves from the customer to the product.</p>
+      <p class="cap" style="font-size:14px">The payout processor Afriex integrated with for China required a CNAPS code with every payout but didn't resolve it on our behalf — unlike providers that map banks and branches in the background. Afriex's first attempt passed that gap to the sender, asking them to supply the code themselves. But senders were used to sending to China without ever touching a CNAPS code, so surfacing the raw requirement felt like a step backwards, and adoption was lukewarm.</p>
+      <p class="cap" style="font-size:14px;margin-bottom:0">The fix isn't to remove the requirement — the receiving rail still needs it — but to <b>own the mapping the partner didn't provide</b>. Afriex maps every supported bank, branch and location to its CNAPS and postal code, so the sender just selects from dropdowns. The complexity moves from the customer to the product.</p>
     </div>
   </div>
 
