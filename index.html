@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ifeanyi — Product Manager · Portfolio</title>
+<meta name="description" content="Product management portfolio — fintech, payments and cross-border products." />
+<style>
+  :root{
+    --brand:#5B3DF5;--brand-dark:#3F27C4;--brand-soft:#EEEAFE;
+    --ink:#14121F;--muted:#6B6880;--line:#E7E4F0;--bg:#F7F6FC;--card:#fff;
+    --radius:18px;--shadow:0 16px 50px rgba(30,20,80,.10);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.6}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+
+  /* nav */
+  nav{position:sticky;top:0;z-index:20;background:rgba(247,246,252,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.02em}
+  .brand .mark{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--brand),#9B7BFF);display:grid;place-items:center;color:#fff;font-weight:900}
+  .navlinks{display:flex;gap:26px;font-size:14px;font-weight:600;color:var(--muted)}
+  .navlinks a:hover{color:var(--brand)}
+  @media(max-width:640px){.navlinks{display:none}}
+
+  /* hero */
+  .hero{padding:78px 0 40px}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--brand-dark);background:var(--brand-soft);padding:6px 14px;border-radius:999px;margin-bottom:22px}
+  .hero h1{font-size:52px;line-height:1.08;letter-spacing:-.03em;margin:0 0 18px;font-weight:800}
+  .hero h1 .g{background:linear-gradient(120deg,var(--brand),#9B7BFF);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p{font-size:19px;color:var(--muted);max-width:660px;margin:0 0 28px}
+  .cta{display:flex;gap:12px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:13px 22px;font-weight:700;font-size:15px;cursor:pointer;border:1.5px solid transparent}
+  .btn.primary{background:var(--brand);color:#fff}
+  .btn.primary:hover{background:var(--brand-dark)}
+  .btn.ghost{background:#fff;border-color:var(--line);color:var(--ink)}
+  .btn.ghost:hover{border-color:var(--brand);color:var(--brand)}
+  @media(max-width:560px){.hero h1{font-size:38px}}
+
+  section{padding:46px 0}
+  .sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:14px;margin-bottom:26px}
+  .sec-head h2{font-size:14px;text-transform:uppercase;letter-spacing:.1em;color:var(--brand);margin:0;font-weight:800}
+  .sec-head .line{flex:1;height:1px;background:var(--line)}
+
+  /* about */
+  .about{display:grid;grid-template-columns:1.4fr 1fr;gap:40px;align-items:start}
+  @media(max-width:760px){.about{grid-template-columns:1fr}}
+  .about p{font-size:17px;color:#3a374a;margin:0 0 16px}
+  .facts{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+  .fact{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px}
+  .fact:last-child{border-bottom:0}
+  .fact .k{color:var(--muted)}
+  .fact .v{font-weight:700}
+  .skills{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .skill{font-size:12.5px;font-weight:600;color:var(--brand-dark);background:var(--brand-soft);border-radius:999px;padding:6px 12px}
+
+  /* work grid */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  @media(max-width:760px){.grid{grid-template-columns:1fr}}
+  .case{display:block;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);transition:.18s}
+  .case:hover{transform:translateY(-4px);border-color:#C9BFF7}
+  .case .thumb{height:190px;background:linear-gradient(135deg,#6a4bff,#9B7BFF);position:relative;display:grid;place-items:center;overflow:hidden}
+  .case .thumb .mini{width:150px;background:#fff;border-radius:16px 16px 0 0;box-shadow:0 20px 50px rgba(0,0,0,.25);padding:14px;transform:translateY(24px)}
+  .mini .amt{background:#EEEAFE;border-radius:9px;text-align:center;padding:10px 0;font-weight:800;color:#3F27C4;font-size:18px}
+  .mini .r{height:10px;border-radius:5px;background:#EFEDF6;margin-top:9px}
+  .mini .r.s{width:70%}
+  .case .body{padding:20px 22px 24px}
+  .case .tagrow{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:11px}
+  .t{font-size:11.5px;font-weight:700;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 9px}
+  .case h3{margin:0 0 6px;font-size:20px;letter-spacing:-.01em}
+  .case p{margin:0;color:var(--muted);font-size:14.5px}
+  .case .go{margin-top:14px;font-weight:700;color:var(--brand);font-size:14px;display:inline-flex;align-items:center;gap:6px}
+  .soon{opacity:.75}
+  .soon .thumb{background:linear-gradient(135deg,#e7e4f0,#f2f0f8)}
+  .soon .thumb .ph{color:#9089a8;font-weight:800;font-size:15px;letter-spacing:.04em}
+
+  /* contact */
+  .contact{background:linear-gradient(135deg,var(--brand),#7c5bff);border-radius:24px;padding:48px;text-align:center;color:#fff;box-shadow:var(--shadow)}
+  .contact h2{font-size:30px;margin:0 0 10px;letter-spacing:-.02em}
+  .contact p{color:rgba(255,255,255,.9);max-width:440px;margin:0 auto 24px}
+  .contact .btn.primary{background:#fff;color:var(--brand)}
+  .contact .btn.ghost{background:transparent;border-color:rgba(255,255,255,.5);color:#fff}
+  footer{padding:40px 0;text-align:center;color:var(--muted);font-size:13px}
+  .edit-note{max-width:1080px;margin:22px auto 0;padding:12px 18px;background:#FFF7E8;border:1px solid #F1D9A8;border-radius:12px;color:#8a6416;font-size:13px}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="brand"><span class="mark">I</span> Ifeanyi</div>
+    <div class="navlinks">
+      <a href="#about">About</a>
+      <a href="#work">Work</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<div class="edit-note wrap-note">
+  ✏️ <b>Personalize me:</b> replace the placeholder name, headline, links (GitHub, LinkedIn, email) and the "About" copy with your own. Search for <code>[EDIT]</code> in this file.
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">✦ Product Manager · Fintech &amp; Payments</span>
+    <h1>Hi, I'm Ifeanyi. I build <span class="g">cross-border payment</span> products people actually finish paying with.</h1>
+    <p><!--[EDIT] your one-line pitch -->I turn messy, multi-market payment problems into simple, shippable product experiences — from problem framing and PRDs to flows, mockups and launch.</p>
+    <div class="cta">
+      <a class="btn primary" href="#work">View my work →</a>
+      <a class="btn ghost" href="#contact">Get in touch</a>
+    </div>
+  </div>
+</header>
+
+<section id="about">
+  <div class="wrap">
+    <div class="sec-head"><h2>About</h2><span class="line"></span></div>
+    <div class="about">
+      <div>
+        <p><!--[EDIT]-->I'm a product manager focused on payments and financial infrastructure across emerging markets. I care about the unglamorous details that decide whether money actually moves — currency choice, local channels, FX transparency, and the last-mile of checkout.</p>
+        <p>This portfolio collects the product work behind those decisions: the thinking, the specs, and the interfaces. Each case study walks through the problem, my role, how I approached it, and what shipped.</p>
+      </div>
+      <div class="facts">
+        <div class="fact"><span class="k">Role</span><span class="v">Product Manager</span></div>
+        <div class="fact"><span class="k">Focus</span><span class="v">Payments · Fintech</span></div>
+        <div class="fact"><span class="k">Regions</span><span class="v">EMEA · APAC · LATAM</span></div>
+        <div class="fact"><span class="k">Based</span><span class="v"><!--[EDIT]-->—</span></div>
+        <div class="skills">
+          <span class="skill">Product strategy</span><span class="skill">PRDs &amp; specs</span>
+          <span class="skill">User research</span><span class="skill">Prototyping</span>
+          <span class="skill">Payments</span><span class="skill">FX &amp; treasury</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="work">
+  <div class="wrap">
+    <div class="sec-head"><h2>Selected work</h2><span class="line"></span></div>
+    <div class="grid">
+
+      <a class="case" href="case-multicurrency-checkout.html">
+        <div class="thumb">
+          <div class="mini">
+            <div class="amt">$250.00</div>
+            <div class="r"></div><div class="r s"></div>
+          </div>
+        </div>
+        <div class="body">
+          <div class="tagrow"><span class="t">Fintech</span><span class="t">Checkout</span><span class="t">0→1</span></div>
+          <h3>Multi-currency checkout for Afriex Collect</h3>
+          <p>A hosted checkout that lets any payer pay in their preferred currency and channel across EMEA, APAC &amp; LATAM — with saved methods, Stripe Link–style.</p>
+          <span class="go">Read case study →</span>
+        </div>
+      </a>
+
+      <div class="case soon">
+        <div class="thumb"><span class="ph">NEXT CASE STUDY</span></div>
+        <div class="body">
+          <div class="tagrow"><span class="t">Coming soon</span></div>
+          <h3>Your next project</h3>
+          <p>Duplicate the case-study page, drop in your problem, process and outcome, and add a card here.</p>
+          <span class="go">Add a project →</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="wrap">
+    <div class="contact">
+      <h2>Let's talk product</h2>
+      <p><!--[EDIT]-->Open to product roles and collaborations in payments and fintech. The fastest way to reach me:</p>
+      <div class="cta" style="justify-content:center">
+        <a class="btn primary" href="mailto:ifeanyi@afriex.co">Email me</a>
+        <a class="btn ghost" href="https://github.com/" target="_blank" rel="noopener"><!--[EDIT] github url-->GitHub</a>
+        <a class="btn ghost" href="https://linkedin.com/" target="_blank" rel="noopener"><!--[EDIT] linkedin url-->LinkedIn</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  © <span id="yr"></span> Ifeanyi · Built with plain HTML, hosted on GitHub Pages.
+</footer>
+
+<script>document.getElementById('yr').textContent=new Date().getFullYear();</script>
+</body>
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Multi-currency checkout — Case study · Ifeanyi</title>
+<meta name="description" content="Case study: designing a multi-currency, multi-channel hosted checkout for Afriex Collect." />
+<style>
+  :root{
+    --brand:#5B3DF5;--brand-dark:#3F27C4;--brand-soft:#EEEAFE;
+    --ink:#14121F;--muted:#6B6880;--line:#E7E4F0;--bg:#F7F6FC;--card:#fff;
+    --ok:#0F9D58;--radius:16px;--shadow:0 16px 50px rgba(30,20,80,.10);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.65}
+  a{color:var(--brand);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:820px;margin:0 auto;padding:0 22px}
+  .wide{max-width:1080px}
+
+  nav{position:sticky;top:0;z-index:20;background:rgba(247,246,252,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;max-width:1080px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.02em;color:var(--ink)}
+  .brand .mark{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--brand),#9B7BFF);display:grid;place-items:center;color:#fff;font-weight:900}
+  .back{font-size:14px;font-weight:600;color:var(--muted)}
+
+  header.top{padding:56px 0 26px}
+  .eyebrow{font-size:13px;font-weight:700;color:var(--brand-dark);background:var(--brand-soft);padding:6px 14px;border-radius:999px;display:inline-block;margin-bottom:20px}
+  header.top h1{font-size:42px;line-height:1.12;letter-spacing:-.03em;margin:0 0 16px;font-weight:800}
+  header.top .sub{font-size:19px;color:var(--muted);margin:0}
+  @media(max-width:560px){header.top h1{font-size:32px}}
+
+  .meta{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:30px 0 10px}
+  @media(max-width:640px){.meta{grid-template-columns:1fr 1fr}}
+  .meta .m{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .meta .m .k{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:700}
+  .meta .m .v{font-weight:700;margin-top:3px;font-size:14.5px}
+
+  section{padding:30px 0}
+  h2.h{font-size:14px;text-transform:uppercase;letter-spacing:.1em;color:var(--brand);margin:0 0 14px;font-weight:800}
+  h3{font-size:20px;letter-spacing:-.01em;margin:24px 0 8px}
+  p{font-size:17px;color:#33313f;margin:0 0 16px}
+  ul{padding-left:22px;margin:0 0 16px}
+  li{font-size:17px;color:#33313f;margin-bottom:8px}
+  li::marker{color:var(--brand)}
+  blockquote{margin:22px 0;padding:18px 22px;background:var(--brand-soft);border-left:4px solid var(--brand);border-radius:0 12px 12px 0;color:var(--brand-dark);font-size:17px;font-weight:600}
+
+  .callout{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:var(--shadow);margin:18px 0}
+  .steps{counter-reset:s;list-style:none;padding:0;margin:0}
+  .steps li{position:relative;padding:0 0 0 46px;margin-bottom:16px}
+  .steps li::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:0;width:30px;height:30px;border-radius:9px;background:var(--brand-soft);color:var(--brand-dark);font-weight:800;display:grid;place-items:center;font-size:14px}
+  .steps li b{display:block;margin-bottom:2px}
+
+  .demo{background:linear-gradient(135deg,#efeafe,#f7f6fc);border:1px solid var(--line);border-radius:24px;padding:26px;margin:8px 0}
+  .demo .bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+  .demo .bar h3{margin:0;font-size:18px}
+  .demo iframe{width:100%;height:900px;border:0;border-radius:16px;background:#F5F4FA;box-shadow:var(--shadow)}
+  .btn{display:inline-flex;align-items:center;gap:8px;border-radius:11px;padding:11px 18px;font-weight:700;font-size:14px;border:1.5px solid transparent;cursor:pointer}
+  .btn.primary{background:var(--brand);color:#fff}
+  .btn.primary:hover{background:var(--brand-dark);text-decoration:none}
+  .btn.ghost{background:#fff;border-color:var(--line);color:var(--ink)}
+  .btn.ghost:hover{border-color:var(--brand);color:var(--brand);text-decoration:none}
+
+  .outcomes{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:10px 0}
+  @media(max-width:640px){.outcomes{grid-template-columns:1fr}}
+  .oc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;text-align:center;box-shadow:var(--shadow)}
+  .oc .n{font-size:30px;font-weight:800;color:var(--brand);letter-spacing:-.02em}
+  .oc .l{font-size:13px;color:var(--muted);margin-top:4px}
+
+  .nextnav{display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding:26px 0 60px;margin-top:20px}
+  footer{padding:30px 0;text-align:center;color:var(--muted);font-size:13px}
+  .edit-note{max-width:820px;margin:20px auto 0;padding:12px 18px;background:#FFF7E8;border:1px solid #F1D9A8;border-radius:12px;color:#8a6416;font-size:13px}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="index.html"><span class="mark">I</span> Ifeanyi</a>
+    <a class="back" href="index.html">← All work</a>
+  </div>
+</nav>
+
+<div class="edit-note">
+  ✏️ <b>Personalize me:</b> the metrics under "Outcomes" are illustrative targets from the PRD. Once the feature ships, replace them with real results. Adjust "My role" to reflect exactly what you owned.
+</div>
+
+<header class="top">
+  <div class="wrap">
+    <span class="eyebrow">Case study · Fintech · Payments</span>
+    <h1>A checkout that lets anyone, anywhere, pay in their own money</h1>
+    <p class="sub">Extending Afriex Collect into a hosted, multi-currency, multi-channel checkout across EMEA, APAC and LATAM — with saved payment methods, Stripe Link–style.</p>
+    <div class="meta">
+      <div class="m"><div class="k">My role</div><div class="v">Product Manager</div></div>
+      <div class="m"><div class="k">Type</div><div class="v">0→1 feature</div></div>
+      <div class="m"><div class="k">Surface</div><div class="v">Hosted checkout</div></div>
+      <div class="m"><div class="k">Deliverables</div><div class="v">PRD + prototype</div></div>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2 class="h">The problem</h2>
+    <p>Afriex Collect let businesses generate a payment link and collect funds without building a checkout — but it forced a single currency and channel. That's a poor fit for merchants selling across borders, where every customer wants to pay the way they already pay locally: a Nigerian buyer by bank transfer to a virtual account, a Kenyan via M-Pesa, a Filipino via GCash, a Brazilian via Pix.</p>
+    <p>The result was lost conversions and FX friction, or expensive bespoke integrations per market. There was no single hosted page that adapted currency and channel to whoever was paying, while still guaranteeing the merchant a predictable settlement amount.</p>
+    <blockquote>How might we let a payer pay in any currency and channel they prefer, while the merchant always receives exactly what they expect?</blockquote>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="h">My role</h2>
+    <p>I owned this feature end to end as product manager: framing the problem, defining scope and requirements, mapping the payer and merchant flows, and producing the PRD and interactive prototype used to align engineering and design. I worked closely with treasury on FX/rate-lock mechanics and with partnerships on channel coverage per corridor.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="h">Approach</h2>
+    <ol class="steps">
+      <li><b>Framed the core insight</b>The merchant and the payer want different things. The merchant wants a predictable settlement amount; the payer wants to pay in their own currency and channel. The product's job is to reconcile the two, with Afriex absorbing the FX in between.</li>
+      <li><b>Designed for stepped disclosure</b>Rather than a wall of options, the payer moves through one decision at a time: see the amount → choose currency → see only the channels valid for that currency → pay. This avoids dead ends where a chosen currency has no viable channel.</li>
+      <li><b>Made FX transparent and safe</b>Each currency shows the converted amount and the market rate up front. Selecting a channel locks the rate for a 15-minute window, so the payer always knows the final amount before committing.</li>
+      <li><b>Reduced repeat friction with Afriex Link</b>Modelled on Stripe Link: payers can save their details and preferred method for one-tap checkout on future payments — recognised across any Afriex merchant.</li>
+      <li><b>Specified the unglamorous edges</b>Rate-lock expiry, under/overpayment on transfers, partner outages, duplicate payments, shared-device recognition — the cases that decide whether money actually moves.</li>
+    </ol>
+  </div>
+</section>
+
+<section>
+  <div class="wide wrap">
+    <h2 class="h" style="text-align:center">The solution — try it live</h2>
+    <div class="demo">
+      <div class="bar">
+        <h3>Interactive prototype</h3>
+        <div>
+          <a class="btn ghost" href="mockup.html" target="_blank" rel="noopener">Open full screen ↗</a>
+        </div>
+      </div>
+      <iframe src="mockup.html" title="Afriex Collect multi-currency checkout prototype" loading="lazy"></iframe>
+    </div>
+    <p style="max-width:820px;margin:14px auto 0;text-align:center;color:var(--muted);font-size:15px">Toggle between the <b>payer checkout flow</b> and the <b>merchant page builder</b>. Currency and channel selections are clickable.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="h">The flow</h2>
+    <p>The hosted checkout is mobile-first and follows the happy path below, with a returning-payer shortcut layered on top:</p>
+    <div class="callout">
+      <p style="margin:0"><b>1. Amount</b> → <b>2. Choose currency</b> (with live rate) → <b>3. Choose channel</b> (only valid ones shown, rate locks) → <b>4. Your details</b> (save with Afriex Link) → <b>5. Pay</b> (channel-specific instructions) → <b>6. Confirmation</b>.</p>
+    </div>
+    <p><b>Returning payers</b> are recognised by Afriex Link and land directly on their saved method with the amount pre-converted — a single "Pay in 1 tap" action, with the option to switch currency or channel.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="h">Outcomes &amp; success metrics</h2>
+    <p>The PRD set measurable targets for the first 90 days after launch. <span style="color:var(--muted)">(Targets shown; replace with actuals post-launch.)</span></p>
+    <div class="outcomes">
+      <div class="oc"><div class="n">≥55%</div><div class="l">Checkout conversion (vs. ~40% single-currency)</div></div>
+      <div class="oc"><div class="n">≥45%</div><div class="l">Payments made in a non-settlement currency</div></div>
+      <div class="oc"><div class="n">≥60%</div><div class="l">Returning payers completing via saved method</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="h">Artifacts</h2>
+    <p>The full product requirements document details personas, tagged requirements, the channels-by-region matrix, FX/rate-lock handling, edge cases, analytics, and a three-phase rollout.</p>
+    <p>
+      <a class="btn primary" href="files/Afriex-Collect-Multicurrency-Checkout-PRD.docx">↓ Download the PRD (Word)</a>
+      &nbsp;
+      <a class="btn ghost" href="mockup.html" target="_blank" rel="noopener">Open the prototype ↗</a>
+    </p>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="nextnav">
+    <a href="index.html">← Back to all work</a>
+    <a href="#top" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">Top ↑</a>
+  </div>
+</div>
+
+<footer>© <span id="yr"></span> Ifeanyi · Case study</footer>
+<script>document.getElementById('yr').textContent=new Date().getFullYear();</script>
+</body>
+</html>
