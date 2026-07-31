@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Afriex Collect — Wedding gift contributions · Prototype</title>
+<style>
+  :root{
+    --brand:#5B3DF5;--brand-dark:#3F27C4;--brand-soft:#EEEAFE;
+    --rose:#C2185B;--rose-soft:#FCE7F0;--gold:#B8860B;
+    --ink:#14121F;--muted:#6B6880;--line:#E7E4F0;--bg:#F5F4FA;--card:#fff;
+    --ok:#0F9D58;--ok-soft:#E4F6EC;--radius:16px;--shadow:0 12px 40px rgba(30,20,80,.10);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:26px 20px 70px}
+  header.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:12px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;letter-spacing:-.02em}
+  .logo .mark{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--brand),#9B7BFF);display:grid;place-items:center;color:#fff;font-weight:900}
+  .tag{font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:5px 12px;background:#fff}
+  .lead{color:var(--muted);max-width:760px;line-height:1.55;margin:6px 0 20px;font-size:15px}
+
+  .stage{display:grid;grid-template-columns:400px 1fr;gap:30px;align-items:start}
+  @media(max-width:820px){.stage{grid-template-columns:1fr}}
+
+  .phone{background:var(--card);border-radius:30px;box-shadow:var(--shadow);border:1px solid var(--line);overflow:hidden;display:flex;flex-direction:column;min-height:680px}
+  .status{height:34px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--muted);border-bottom:1px solid var(--line)}
+  .chk-body{flex:1;display:flex;flex-direction:column;overflow:auto}
+
+  /* hero */
+  .hero{background:linear-gradient(160deg,#3F27C4,#7c4bd8 60%,#C2185B);color:#fff;padding:26px 22px 22px;text-align:center;position:relative}
+  .hero .kicker{font-size:11px;text-transform:uppercase;letter-spacing:.14em;opacity:.85;font-weight:600}
+  .hero .names{font-size:30px;font-weight:800;letter-spacing:-.01em;margin:8px 0 6px;font-family:Georgia,'Times New Roman',serif}
+  .hero .amp{opacity:.8;font-weight:400}
+  .hero .meta{font-size:13px;opacity:.92}
+  .hero .rings{font-size:24px;margin-bottom:2px}
+  .body-pad{padding:18px 20px;display:flex;flex-direction:column;gap:14px}
+
+  .note{background:var(--rose-soft);border-radius:12px;padding:13px 15px;font-size:13.5px;color:#7a1442;line-height:1.5;font-style:italic}
+  .goal{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px}
+  .goal .row{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin-bottom:8px}
+  .goal .row b{color:var(--ink);font-size:14px}
+  .track{height:9px;background:var(--brand-soft);border-radius:999px;overflow:hidden}
+  .fill{height:100%;background:linear-gradient(90deg,var(--brand),var(--rose));width:62%;transition:width .5s}
+  .goal .sub{font-size:11.5px;color:var(--muted);margin-top:8px}
+
+  .sec-title{font-size:13px;font-weight:700;margin:2px 0 -2px}
+  .amt-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px}
+  .amt{border:1.5px solid var(--line);border-radius:12px;padding:14px 6px;text-align:center;cursor:pointer;background:#fff;font-weight:800;font-size:16px;transition:.12s}
+  .amt:hover{border-color:#C9BFF7}
+  .amt.sel{border-color:var(--brand);background:#FBFAFF;box-shadow:0 0 0 3px rgba(91,61,245,.10);color:var(--brand-dark)}
+  .amt small{display:block;font-weight:600;font-size:10.5px;color:var(--muted);margin-top:2px}
+  .custom{display:flex;align-items:center;gap:8px;border:1.5px solid var(--line);border-radius:12px;padding:4px 12px}
+  .custom.sel{border-color:var(--brand);box-shadow:0 0 0 3px rgba(91,61,245,.10)}
+  .custom span{font-weight:800;color:var(--muted)}
+  .custom input{border:0;outline:0;font-size:16px;font-weight:800;font-family:inherit;width:100%;padding:12px 0;background:transparent}
+
+  .field{display:flex;flex-direction:column;gap:6px}
+  .field label{font-size:12px;font-weight:700}
+  .field select,.field input,.field textarea{border:1.5px solid var(--line);border-radius:11px;padding:12px 13px;font-size:14px;font-family:inherit;outline:none;background:#fff;width:100%}
+  .field textarea{resize:none;height:64px}
+  .field select:focus,.field input:focus,.field textarea:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(91,61,245,.10)}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+  .opt{border:1.5px solid var(--line);border-radius:12px;padding:11px 13px;display:flex;align-items:center;gap:11px;cursor:pointer;background:#fff}
+  .opt.sel{border-color:var(--brand);background:#FBFAFF;box-shadow:0 0 0 3px rgba(91,61,245,.10)}
+  .opt .flag{font-size:20px}
+  .opt .t{font-weight:700;font-size:13.5px}
+  .opt .d{font-size:11.5px;color:var(--muted)}
+  .opt .rt{margin-left:auto;text-align:right;font-size:11.5px;color:var(--muted)}
+  .opt .rt b{display:block;color:var(--ink);font-size:13px}
+  .radio{margin-left:auto;width:18px;height:18px;border-radius:50%;border:2px solid var(--line);flex:0 0 auto}
+  .opt.sel .radio{border-color:var(--brand);background:radial-gradient(circle at center,var(--brand) 0 42%,#fff 46%)}
+
+  .foot{padding:14px 20px 18px;border-top:1px solid var(--line);background:#fff}
+  .btn{width:100%;border:0;border-radius:12px;padding:15px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
+  .btn.primary{background:var(--brand);color:#fff}.btn.primary:hover{background:var(--brand-dark)}
+  .btn.primary:disabled{background:#C9BFF7;cursor:not-allowed}
+  .backlink{background:none;border:0;color:var(--muted);font-size:13px;cursor:pointer;font-family:inherit;padding:0;margin-bottom:2px}
+  .payline{display:flex;justify-content:space-between;font-size:13px;padding:4px 0}
+  .payline .m{color:var(--muted)}
+  .payline.total{border-top:1px dashed var(--line);margin-top:6px;padding-top:10px;font-weight:800;font-size:15px}
+
+  .success-ic{width:74px;height:74px;border-radius:50%;background:var(--ok-soft);display:grid;place-items:center;margin:22px auto 4px;color:var(--ok);font-size:38px}
+  .center{text-align:center}
+  .h2{font-size:20px;font-weight:800;margin:6px 0 2px}
+  .hint{font-size:12.5px;color:var(--muted);line-height:1.5;margin:0}
+  .chip{display:inline-flex;align-items:center;gap:5px;background:var(--brand-soft);color:var(--brand-dark);border-radius:999px;padding:4px 10px;font-size:11px;font-weight:600}
+
+  .steps{display:flex;gap:6px;align-items:center;font-size:11px;color:var(--muted);font-weight:600;padding:0 2px}
+  .steps .s .n{width:20px;height:20px;border-radius:50%;background:var(--line);color:#fff;display:inline-grid;place-items:center;font-size:11px;margin-right:5px}
+  .steps .s.on .n{background:var(--brand)}.steps .s.done .n{background:var(--ok)}
+  .steps .bar{flex:1;height:2px;background:var(--line);margin:0 4px}
+
+  /* side */
+  .side{display:flex;flex-direction:column;gap:18px}
+  .panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+  .panel h3{margin:0 0 4px;font-size:16px}
+  .panel .cap{font-size:13px;color:var(--muted);margin:0 0 14px;line-height:1.5}
+  .delta{display:flex;gap:11px;padding:11px 0;border-bottom:1px solid var(--line)}
+  .delta:last-child{border-bottom:0}
+  .delta .ic{width:32px;height:32px;border-radius:9px;background:var(--brand-soft);display:grid;place-items:center;flex:0 0 auto;font-size:15px}
+  .delta .t{font-weight:700;font-size:13.5px}
+  .delta .d{font-size:12.5px;color:var(--muted);line-height:1.4}
+  .badge{display:inline-block;background:var(--ok-soft);color:var(--ok);border-radius:999px;padding:3px 10px;font-size:11px;font-weight:700;margin-bottom:8px}
+  .reuse{font-size:12.5px;color:#33313f;line-height:1.5}
+  footer.note2{margin-top:30px;color:var(--muted);font-size:12px;text-align:center;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="logo"><span class="mark">A</span> Afriex Collect · Celebrations <span class="tag">Prototype · Group gifting</span></div>
+    <div class="tag">Interactive — pick an amount &amp; currency</div>
+  </header>
+  <p class="lead">The same Collect engine — hosted link, payer chooses currency &amp; channel, recipient gets a predictable settlement — applied to a <b>wedding gift page</b>. Many guests contribute to one link, with preset amounts or a custom gift.</p>
+
+  <div class="stage">
+    <!-- PHONE -->
+    <div class="phone">
+      <div class="status">9:41 · gift.afriex.com/emeka-and-amara</div>
+      <div class="chk-body" id="body">
+
+        <!-- HERO always visible on step 1 -->
+        <div id="hero" class="hero">
+          <div class="rings">💍</div>
+          <div class="kicker">You're invited to celebrate</div>
+          <div class="names">Emeka <span class="amp">&amp;</span> Amara</div>
+          <div class="meta">14 December 2026 · Nairobi, Kenya 🇰🇪</div>
+        </div>
+
+        <!-- STEP 1 -->
+        <div id="step1" class="body-pad">
+          <div class="note">"We met in grad school in Mauritius, and our friends are now scattered across the world. If you can't make it to Nairobi, your gift would mean the world to us. — Emeka &amp; Amara"</div>
+          <div class="goal">
+            <div class="row"><span>Gifts received so far</span><span><b id="raised">$3,720</b> of $6,000</span></div>
+            <div class="track"><div class="fill" id="fill"></div></div>
+            <div class="sub" id="contribcount">48 friends have contributed from 11 countries</div>
+          </div>
+          <div class="sec-title">Choose your gift</div>
+          <div class="amt-grid">
+            <div class="amt" onclick="pick(this,25)">$25<small>Toast 🥂</small></div>
+            <div class="amt" onclick="pick(this,50)">$50<small>Blessing</small></div>
+            <div class="amt sel" onclick="pick(this,100)">$100<small>Generous</small></div>
+            <div class="amt" onclick="pick(this,150)">$150</div>
+            <div class="amt" onclick="pick(this,250)">$250</div>
+            <div class="amt" onclick="pick(this,500)">$500</div>
+          </div>
+          <div class="custom" id="customBox" onclick="focusCustom()">
+            <span>$</span><input id="customAmt" type="number" min="1" placeholder="Enter a custom amount" oninput="onCustom()" />
+          </div>
+          <div class="chip">🌍 Pay in your own currency at the next step</div>
+        </div>
+
+        <!-- STEP 2: currency + channel -->
+        <div id="step2" class="body-pad" style="display:none">
+          <button class="backlink" onclick="goStep(1)">← Change gift amount</button>
+          <div class="steps"><div class="s done"><span class="n">1</span>Amount</div><span class="bar"></span><div class="s on"><span class="n">2</span>Pay</div><span class="bar"></span><div class="s"><span class="n">3</span>Done</div></div>
+          <div class="sec-title">Pay in your preferred currency</div>
+          <div class="opt sel" onclick="pickCur(this,'NGN','₦','1,530','Bank transfer, OPay, card')"><span class="flag">🇳🇬</span><div><div class="t">Nigerian Naira</div><div class="d">NGN</div></div><div class="rt"><b id="c-ngn">₦153,000</b>@1,530</div><div class="radio"></div></div>
+          <div class="opt" onclick="pickCur(this,'KES','KSh','129.5','M-Pesa, bank transfer')"><span class="flag">🇰🇪</span><div><div class="t">Kenyan Shilling</div><div class="d">KES</div></div><div class="rt"><b id="c-kes">KSh 12,950</b>@129.5</div><div class="radio"></div></div>
+          <div class="opt" onclick="pickCur(this,'GHS','₵','15.1','MTN MoMo, bank transfer')"><span class="flag">🇬🇭</span><div><div class="t">Ghanaian Cedi</div><div class="d">GHS</div></div><div class="rt"><b id="c-ghs">₵1,510</b>@15.1</div><div class="radio"></div></div>
+          <div class="opt" onclick="pickCur(this,'ZAR','R','18.3','Bank transfer, card')"><span class="flag">🇿🇦</span><div><div class="t">South African Rand</div><div class="d">ZAR</div></div><div class="rt"><b id="c-zar">R1,830</b>@18.3</div><div class="radio"></div></div>
+          <div class="sec-title" style="margin-top:6px">Channel</div>
+          <div class="field"><select id="channel"><option>Bank transfer · virtual account</option><option>Mobile money</option><option>Afriex wallet</option><option>Card</option></select></div>
+        </div>
+
+        <!-- STEP 3: details -->
+        <div id="step3" class="body-pad" style="display:none">
+          <button class="backlink" onclick="goStep(2)">← Payment method</button>
+          <div class="steps"><div class="s done"><span class="n">1</span>Amount</div><span class="bar"></span><div class="s done"><span class="n">2</span>Pay</div><span class="bar"></span><div class="s on"><span class="n">3</span>Details</div></div>
+          <div class="row2">
+            <div class="field"><label>Your name</label><input id="gname" value="Kwame Mensah" /></div>
+            <div class="field"><label>Email</label><input id="gemail" value="kwame@example.com" /></div>
+          </div>
+          <div class="field"><label>A note to the couple <span style="color:var(--muted);font-weight:500">(optional)</span></label><textarea id="gmsg" placeholder="Wishing you both a lifetime of joy…">So happy for you both! Wish I could be there. — Kwame (Mauritius '19)</textarea></div>
+          <div class="goal" style="background:var(--bg)">
+            <div class="payline"><span class="m">Your gift</span><span id="r-usd">$100.00</span></div>
+            <div class="payline"><span class="m">You pay in</span><span id="r-local">₦153,000 (NGN)</span></div>
+            <div class="payline"><span class="m">Couple receives</span><span>$100.00</span></div>
+            <div class="payline total"><span>Total</span><span id="r-pay">₦153,000</span></div>
+          </div>
+        </div>
+
+        <!-- SUCCESS -->
+        <div id="stepDone" class="body-pad center" style="display:none">
+          <div class="success-ic">💝</div>
+          <div class="h2">Your gift is on its way!</div>
+          <p class="hint center">Thank you, <b id="d-name">Kwame</b>. Your gift of <b id="d-amt">$100</b> has been sent to Emeka &amp; Amara. They'll see your note. A receipt is on its way to your email.</p>
+          <div style="height:12px"></div>
+          <div class="goal">
+            <div class="row"><span>New total raised</span><span><b id="d-total">$3,820</b> of $6,000</span></div>
+            <div class="track"><div class="fill" id="d-fill" style="width:64%"></div></div>
+            <div class="sub">You're the 49th friend to contribute 🎉</div>
+          </div>
+          <div style="height:12px"></div>
+          <button class="btn primary" onclick="location.reload()" style="background:var(--rose)">Send another gift</button>
+        </div>
+
+      </div>
+      <div class="foot" id="foot">
+        <button class="btn primary" id="cta" onclick="next()">Gift $100 →</button>
+      </div>
+    </div>
+
+    <!-- SIDE -->
+    <div class="side">
+      <div class="panel">
+        <span class="badge">✓ Same Collect engine</span>
+        <h3>A variation, not a new product</h3>
+        <p class="cap reuse">This reuses everything from the core Collect checkout — hosted link, payer picks currency &amp; channel, Afriex market rates, predictable settlement to the recipient. Only the configuration and presentation change.</p>
+      </div>
+      <div class="panel">
+        <h3>What this scenario adds</h3>
+        <p class="cap">The deltas that make "occasions / group gifting" its own use case:</p>
+        <div class="delta"><div class="ic">👥</div><div><div class="t">Many payers → one link</div><div class="d">A running total and contributor count, not one invoice for one payer.</div></div></div>
+        <div class="delta"><div class="ic">🎚️</div><div><div class="t">Preset + custom amounts</div><div class="d">Suggested gift tiers with a free-entry option, versus a fixed amount.</div></div></div>
+        <div class="delta"><div class="ic">🧑</div><div><div class="t">Individual recipient (P2P)</div><div class="d">A person, not a KYB'd business — different limits &amp; compliance posture.</div></div></div>
+        <div class="delta"><div class="ic">💌</div><div><div class="t">Branded, emotional page</div><div class="d">Couple's names, photo, note &amp; messages — not a utilitarian invoice.</div></div></div>
+      </div>
+      <div class="panel">
+        <h3>Why it's cross-border by default</h3>
+        <p class="cap" style="margin-bottom:0">The guests were scattered by construction — coursemates from Mauritius now back in Nigeria, Ghana, Kenya, South Africa and beyond. Every one of them pays in their own currency; the couple in Nairobi receives one predictable settlement.</p>
+      </div>
+    </div>
+  </div>
+  <footer class="note2">Afriex Collect · Group gifting prototype · Illustrative names, amounts &amp; rates only.</footer>
+</div>
+
+<script>
+const RATES={USD:1,NGN:1530,KES:129.5,GHS:15.1,ZAR:18.3};
+const SYM={USD:'$',NGN:'₦',KES:'KSh ',GHS:'₵',ZAR:'R'};
+let amount=100, cur='NGN', curSym='₦', curRate='1,530';
+
+function fmt(n){return n.toLocaleString('en-US');}
+function pick(el,v){
+  document.querySelectorAll('.amt').forEach(a=>a.classList.remove('sel'));
+  el.classList.add('sel');
+  document.getElementById('customBox').classList.remove('sel');
+  document.getElementById('customAmt').value='';
+  amount=v; refresh();
+}
+function focusCustom(){document.getElementById('customAmt').focus();}
+function onCustom(){
+  const v=parseFloat(document.getElementById('customAmt').value||'0');
+  document.querySelectorAll('.amt').forEach(a=>a.classList.remove('sel'));
+  document.getElementById('customBox').classList.add('sel');
+  amount=isNaN(v)?0:v; refresh();
+}
+function refresh(){
+  const cta=document.getElementById('cta');
+  cta.textContent = amount>0 ? ('Gift $'+fmt(amount)+' →') : 'Choose a gift amount';
+  cta.disabled = !(amount>0);
+  // update currency previews
+  Object.keys(RATES).forEach(k=>{
+    const el=document.getElementById('c-'+k.toLowerCase());
+    if(el){const local=Math.round(amount*RATES[k]); el.textContent=SYM[k]+fmt(local);}
+  });
+}
+function pickCur(el,code,sym,rate,channels){
+  document.querySelectorAll('#step2 .opt').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel'); cur=code; curSym=sym; curRate=rate;
+}
+let step=1;
+function goStep(n){
+  step=n;
+  document.getElementById('hero').style.display=(n===1?'block':'none');
+  ['step1','step2','step3'].forEach((id,i)=>document.getElementById(id).style.display=(i+1===n?'flex':'none'));
+  document.getElementById('stepDone').style.display='none';
+  document.getElementById('foot').style.display='block';
+  const cta=document.getElementById('cta');
+  if(n===1){refresh();}
+  if(n===2){cta.disabled=false;cta.textContent='Continue →';}
+  if(n===3){populate();cta.disabled=false;cta.textContent='Send gift · '+curSym+fmt(Math.round(amount*RATES[cur]));}
+  document.getElementById('body').scrollTop=0;
+}
+function populate(){
+  const local=Math.round(amount*RATES[cur]);
+  document.getElementById('r-usd').textContent='$'+fmt(amount)+'.00';
+  document.getElementById('r-local').textContent=curSym+fmt(local)+' ('+cur+')';
+  document.getElementById('r-pay').textContent=curSym+fmt(local);
+}
+function next(){
+  if(step===1){ if(amount>0) goStep(2); }
+  else if(step===2){ goStep(3); }
+  else if(step===3){ finish(); }
+}
+function finish(){
+  document.getElementById('hero').style.display='none';
+  ['step1','step2','step3'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById('stepDone').style.display='flex';
+  document.getElementById('foot').style.display='none';
+  document.getElementById('d-name').textContent=document.getElementById('gname').value.split(' ')[0];
+  document.getElementById('d-amt').textContent='$'+fmt(amount);
+  const newTotal=3720+amount;
+  document.getElementById('d-total').textContent='$'+fmt(newTotal);
+  document.getElementById('d-fill').style.width=Math.min(100,Math.round(newTotal/6000*100))+'%';
+}
+// init
+document.getElementById('fill').style.width='62%';
+refresh();
+</script>
+</body>
+</html>

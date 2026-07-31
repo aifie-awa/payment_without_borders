@@ -8,14 +8,26 @@ A lightweight product-management portfolio, hosted free on GitHub Pages. Plain H
 
 ```
 portfolio/
-├── index.html                         ← Landing page (about, work grid, contact)
-├── case-multicurrency-checkout.html   ← Case study: Afriex Collect multi-currency checkout
-├── mockup.html                        ← Interactive prototype (embedded in the case study)
+├── index.html                          ← Landing page (about, work grid, contact)
+├── case-multicurrency-checkout.html    ← Case study 1: Afriex Collect multi-currency checkout
+├── mockup.html                         ← Prototype 1 (embedded in case study 1)
+├── case-send-to-china.html             ← Case study 2: CNAPS-guided transfers to China
+├── send-to-china-mockup.html           ← Prototype 2 (embedded in case study 2)
+├── case-wedding-gifting.html           ← Case study 3: cross-border group wedding gifting
+├── wedding-gift-mockup.html            ← Prototype 3 (embedded in case study 3)
 ├── files/
-│   └── Afriex-Collect-Multicurrency-Checkout-PRD.docx   ← Downloadable PRD
-├── .nojekyll                          ← Tells GitHub Pages to serve files as-is
+│   ├── Afriex-Collect-Multicurrency-Checkout-PRD.docx   ← PRD 1
+│   └── Afriex-Send-to-China-CNAPS-PRD.docx              ← PRD 2
+├── data/                               ← Open reference data (China bank / CNAPS)
+│   ├── china-banks-selected.csv        ← ~74k rows, major banks
+│   ├── china-banks-other.csv           ← ~74.7k rows, other banks
+│   ├── curated-banks.json              ← Subset powering prototype 2
+│   └── DATA-DICTIONARY.md              ← Column definitions & notes
+├── .nojekyll                           ← Tells GitHub Pages to serve files as-is
 └── README.md
 ```
+
+The `data/` folder publishes the bank/CNAPS reference data so anyone can inspect or reuse it — GitHub previews the CSVs and renders the data dictionary. See [`data/DATA-DICTIONARY.md`](data/DATA-DICTIONARY.md).
 
 ## Deploy to GitHub Pages (no command line needed)
 
@@ -35,9 +47,13 @@ Search each file for `[EDIT]` and the yellow note banners, then update:
 
 ## Add another case study later
 
-1. Copy `case-multicurrency-checkout.html` to a new file (e.g. `case-yourproject.html`).
+1. Copy an existing `case-*.html` file to a new file (e.g. `case-yourproject.html`).
 2. Replace the content sections (problem, role, approach, solution, outcomes).
 3. Add a matching `<a class="case">` card in the work grid in `index.html` (replace the "Coming soon" placeholder).
+
+## A note on the large CSVs
+
+The two China CSVs are ~9 MB each. That's fine for GitHub (the limit is 100 MB per file), and they'll download cleanly. GitHub renders a preview for smaller CSVs; for large ones it shows a "view raw / download" option — still fully accessible. If you'd rather keep the repo lean, you can drop the CSVs and keep just `curated-banks.json` + the data dictionary.
 
 ---
 
