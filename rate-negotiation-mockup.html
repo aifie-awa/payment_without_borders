@@ -34,7 +34,7 @@
   .screen-label.tl{color:var(--teal-dark)}
 
   /* chat phone */
-  .phone{background:var(--card);border-radius:30px;box-shadow:var(--shadow);border:1px solid var(--line);overflow:hidden;display:flex;flex-direction:column;height:720px}
+  .phone{background:var(--card);border-radius:30px;box-shadow:var(--shadow);border:1px solid var(--line);overflow:hidden;display:flex;flex-direction:column;height:760px}
   .status{height:34px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--muted);border-bottom:1px solid var(--line)}
   .chead{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:11px}
   .bot-ava{width:38px;height:38px;border-radius:10px;background:var(--teal-soft);display:grid;place-items:center;font-size:18px}
@@ -42,7 +42,7 @@
   .bot-sub{font-size:12px;color:var(--muted)}
   .secure{margin-left:auto;font-size:11px;color:var(--ok);font-weight:600}
   .chat{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px;background:#FBFAFF}
-  .msg{max-width:82%;padding:11px 14px;border-radius:16px;font-size:14px;line-height:1.5;animation:pop .18s ease}
+  .msg{max-width:86%;padding:11px 14px;border-radius:16px;font-size:14px;line-height:1.5;animation:pop .18s ease}
   @keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
   .msg.bot{align-self:flex-start;background:#fff;border:1px solid var(--line);border-bottom-left-radius:5px}
   .msg.me{align-self:flex-end;background:var(--brand);color:#fff;border-bottom-right-radius:5px}
@@ -57,25 +57,43 @@
   .qbtn.primary:hover{background:var(--brand-dark);color:#fff}
   .qbtn.teal{background:var(--teal);color:#fff;border-color:var(--teal);text-align:center}
   .qbtn.teal:hover{background:var(--teal-dark)}
+  .qbtn.ghost{background:#fff;border-color:var(--line);color:var(--ink);text-align:center}
+  .qbtn.ghost:hover{border-color:var(--teal);color:var(--teal-dark)}
   .qhint{font-size:11px;color:var(--muted);text-align:center;margin:2px 0 0}
 
-  /* execution progress */
-  .exec{display:flex;flex-direction:column;gap:9px}
-  .estep{display:flex;align-items:center;gap:11px;font-size:13px;color:var(--muted)}
-  .estep .b{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:12px;flex:0 0 auto;background:#fff}
+  /* in-chat cards */
+  .vacct{border:1.5px solid var(--line);border-radius:12px;overflow:hidden;margin-top:8px;background:#fff}
+  .vrow{display:flex;justify-content:space-between;align-items:center;padding:11px 13px;border-bottom:1px solid var(--line);gap:10px}
+  .vrow:last-child{border-bottom:0}
+  .vrow .k{font-size:12px;color:var(--muted)}
+  .vrow .v{font-weight:700;font-size:13.5px;display:flex;align-items:center;gap:8px;text-align:right}
+  .copy{font-size:11px;color:var(--teal-dark);border:1px solid var(--line);border-radius:7px;padding:3px 8px;cursor:pointer;background:#fff;font-weight:700}
+  .countdown{background:var(--warn-soft);color:var(--warn);border-radius:10px;padding:9px 12px;font-size:12px;font-weight:700;text-align:center;margin-top:4px}
+  .locked{background:var(--teal-soft);color:var(--teal-dark)}
+  .winput{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+  .winput input{border:1.5px solid var(--line);border-radius:11px;padding:11px 12px;font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;outline:none}
+  .winput input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(14,143,126,.12)}
+  .winput button{border:0;background:var(--teal);color:#fff;border-radius:11px;padding:11px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+  .winput button:hover{background:var(--teal-dark)}
+  .hashbox{background:#0f1720;border-radius:12px;padding:12px 13px;margin-top:8px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;color:#e6edf5;word-break:break-all;line-height:1.6}
+  .hashbox .lbl{color:#8fa6c4;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+  .hashbox a{color:#6fd7c4;font-weight:700}
+  .success-ic{width:60px;height:60px;border-radius:50%;background:var(--ok-soft);display:grid;place-items:center;margin:4px auto 2px;color:var(--ok);font-size:30px}
+  .exec{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+  .estep{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--muted)}
+  .estep .b{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:11px;flex:0 0 auto;background:#fff}
   .estep.done{color:var(--ink)}
   .estep.done .b{background:var(--ok);border-color:var(--ok);color:#fff}
   .estep.active .b{border-color:var(--teal);color:var(--teal)}
-  .success-ic{width:64px;height:64px;border-radius:50%;background:var(--ok-soft);display:grid;place-items:center;margin:6px auto 2px;color:var(--ok);font-size:32px}
 
   /* side panel: engine + audit */
   .panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:22px}
   .phead{padding:15px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:9px;font-weight:800;font-size:15px}
   .phead .dot{width:9px;height:9px;border-radius:50%;background:var(--teal)}
   .pbody{padding:18px 20px;display:flex;flex-direction:column;gap:14px}
-  .kv{display:flex;justify-content:space-between;font-size:13px;padding:2px 0}
+  .kv{display:flex;justify-content:space-between;font-size:13px;padding:2px 0;gap:12px}
   .kv .k{color:var(--muted)}
-  .kv .v{font-weight:700}
+  .kv .v{font-weight:700;text-align:right}
   .bounds{background:var(--bg);border-radius:12px;padding:14px}
   .bar{position:relative;height:10px;border-radius:6px;background:linear-gradient(90deg,#FBEAE8 0 18%,var(--teal-soft) 18% 100%);margin:26px 0 22px}
   .bar .floor{position:absolute;left:18%;top:-20px;font-size:10px;color:#C0392B;font-weight:700;transform:translateX(-50%)}
@@ -89,7 +107,7 @@
   .rung.floor{background:#FBEAE8;color:#C0392B;font-weight:700}
   .gate{display:flex;align-items:center;gap:10px;background:var(--warn-soft);border:1px solid #F1D9A8;border-radius:11px;padding:11px 13px;font-size:12.5px;color:var(--warn)}
   .gate.clear{background:var(--ok-soft);border-color:#BCE6CC;color:var(--ok)}
-  .audit{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;line-height:1.7;color:#33313f;background:#0f1720;border-radius:12px;padding:14px 15px;max-height:280px;overflow-y:auto}
+  .audit{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;line-height:1.7;color:#33313f;background:#0f1720;border-radius:12px;padding:14px 15px;max-height:320px;overflow-y:auto}
   .audit .ln{color:#8fa6c4}
   .audit .ln b{color:#e6edf5;font-weight:600}
   .audit .ln .t{color:#5f7691}
@@ -100,13 +118,13 @@
 <div class="wrap">
   <header class="top">
     <div class="logo"><span class="mark">A</span> Afriex Business Portal <span class="tag">Prototype · AI rate negotiation</span></div>
-    <div class="tag">Interactive — click through the negotiation</div>
+    <div class="tag">Interactive — click through the trade</div>
   </header>
 
-  <p class="lead">A clickable prototype of the <b>AI rate-negotiation agent</b>. A business client negotiates an FX rate in chat; the agent interprets intent but <b>every price comes from the deterministic engine</b> — which holds the floor, the mid, and the concession ladder. Watch the engine panel and audit log update live as you negotiate, then execute through the gated, atomic path. Toggle to the <b>desk &amp; engine view</b> to see what the business sees.</p>
+  <p class="lead">A clickable prototype of the <b>AI rate-negotiation agent</b> for a <b>NGN → USDC</b> trade. A business client negotiates the rate in chat; the agent interprets intent but <b>every price comes from the deterministic engine</b>. Once agreed, the client can lock the rate or proceed straight to execution: pay NGN into a virtual account, funds are confirmed, the client provides a USDC wallet, and the on-chain transaction hash is returned. Toggle to the <b>desk &amp; engine view</b> to see the policy the engine enforces.</p>
 
   <div class="switcher">
-    <button class="active" onclick="setView('client',this)">Client negotiation (chat)</button>
+    <button class="active" onclick="setView('client',this)">Client trade (chat)</button>
     <button onclick="setView('desk',this)">Desk &amp; engine view</button>
   </div>
 
@@ -114,7 +132,7 @@
   <div class="view active" id="view-client">
     <div class="cols">
       <div>
-        <p class="screen-label">Client · negotiate &amp; execute</p>
+        <p class="screen-label">Client · negotiate, pay &amp; receive</p>
         <div class="phone">
           <div class="status">9:41 · Afriex Business Portal</div>
           <div class="chead">
@@ -123,7 +141,7 @@
             <div class="secure">🔒 Secure</div>
           </div>
           <div class="chat" id="chat">
-            <div class="msg bot">Hi Amara 👋 I can quote and lock a rate for you. What would you like to trade today?</div>
+            <div class="msg bot">Hi Amara 👋 I can quote and execute a trade for you. What would you like to do today?</div>
           </div>
           <div class="quick" id="quick"></div>
         </div>
@@ -134,12 +152,12 @@
         <div class="panel">
           <div class="phead"><span class="dot"></span> Deal &amp; engine state</div>
           <div class="pbody">
-            <div class="kv"><span class="k">Pair · notional</span><span class="v" id="d-pair">USDC → NGN · —</span></div>
+            <div class="kv"><span class="k">Pair · you buy</span><span class="v" id="d-pair">NGN → USDC · —</span></div>
             <div class="kv"><span class="k">Client tier</span><span class="v">Tier 2 · limit $500k / deal</span></div>
-            <div class="kv"><span class="k">Current offer (₦/$)</span><span class="v" id="d-offer">—</span></div>
+            <div class="kv"><span class="k">Current offer (₦/USDC)</span><span class="v" id="d-offer">—</span></div>
 
             <div class="bounds">
-              <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:4px">Allowable band (₦ per $)</div>
+              <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:4px">Allowable band (₦ per USDC)</div>
               <div class="bar">
                 <span class="floor">Floor 1,530</span>
                 <span class="mid">Mid 1,552</span>
@@ -178,14 +196,14 @@
       <div>
         <p class="screen-label tl">Trading desk · policy the engine enforces</p>
         <div class="panel">
-          <div class="phead"><span class="dot"></span> Pricing policy · USDC → NGN</div>
+          <div class="phead"><span class="dot"></span> Pricing policy · NGN → USDC</div>
           <div class="pbody">
             <div class="kv"><span class="k">Mid-market source</span><span class="v">Blended feed + LP quotes</span></div>
-            <div class="kv"><span class="k">Mid rate</span><span class="v">1,552 ₦/$</span></div>
-            <div class="kv"><span class="k">Spread floor (Tier 2)</span><span class="v">≥ 1,530 ₦/$</span></div>
+            <div class="kv"><span class="k">Mid rate</span><span class="v">1,552 ₦/USDC</span></div>
+            <div class="kv"><span class="k">Spread floor (Tier 2)</span><span class="v">≥ 1,530 ₦/USDC</span></div>
             <div class="kv"><span class="k">Opening spread</span><span class="v">Mid − 4 (1,548)</span></div>
             <div class="kv"><span class="k">Max concession</span><span class="v">3 moves → 1,536</span></div>
-            <div class="kv"><span class="k">Rate-lock TTL</span><span class="v">120 seconds</span></div>
+            <div class="kv"><span class="k">Rate-lock TTL</span><span class="v">15 minutes</span></div>
             <div class="gate" id="gate2">⚑ Deals &gt; $500k or &lt; floor+2 → route to desk approval</div>
             <div style="font-size:12.5px;color:var(--muted);line-height:1.55">The desk sets these rules once; the engine applies them to every negotiation. The agent has no ability to price outside this policy.</div>
           </div>
@@ -194,13 +212,13 @@
       <div>
         <p class="screen-label">What the client experiences</p>
         <div class="panel">
-          <div class="phead"><span class="dot" style="background:var(--brand)"></span> Negotiation, from the client side</div>
+          <div class="phead"><span class="dot" style="background:var(--brand)"></span> The end-to-end trade</div>
           <div class="pbody">
             <div style="font-size:13px;color:#33313f;line-height:1.6">
-              The client chats naturally — "can you do better than 1,548?" — and the agent counters only with the engine's next allowable rung, holds firm at the floor, locks the agreed rate for 120 seconds, then runs the atomic execution path to settlement.
+              The client negotiates a rate, then chooses to <b>lock it</b> or <b>proceed</b>. On proceed they get a <b>NGN virtual account</b> to fund; once payment is confirmed they enter a <b>USDC wallet address</b>, and the agent returns the on-chain <b>transaction hash</b> — the whole trade in one conversation.
             </div>
-            <button class="qbtn teal" onclick="setView('client',document.querySelectorAll('.switcher button')[0])">Try the client negotiation →</button>
-            <div class="callout" style="font-size:12px;color:var(--muted);background:var(--bg);border-radius:10px;padding:12px 14px">Every message, quote, counter, decision and execution step on the left is written to the immutable audit log — replayable for compliance.</div>
+            <button class="qbtn teal" onclick="setView('client',document.querySelectorAll('.switcher button')[0])">Try the client trade →</button>
+            <div style="font-size:12px;color:var(--muted);background:var(--bg);border-radius:10px;padding:12px 14px">Every message, quote, counter, decision and execution step on the left is written to the immutable audit log — replayable for compliance.</div>
           </div>
         </div>
       </div>
@@ -208,23 +226,25 @@
   </div>
 
   <footer class="note">
-    AI rate-negotiation agent — clickable prototype for PRD review. Rates, tiers and account details are illustrative only. The LLM never generates a price; all rates shown come from the deterministic engine (Rule 0).
+    AI rate-negotiation agent — clickable prototype for PRD review. Rates, accounts, wallet and hash are illustrative only. The LLM never generates a price; all rates shown come from the deterministic engine (Rule 0).
   </footer>
 </div>
 
 <script>
   function setView(v,btn){
-    document.querySelectorAll('.view').forEach(e=>e.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(function(e){e.classList.remove('active');});
     document.getElementById('view-'+v).classList.add('active');
-    document.querySelectorAll('.switcher button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.switcher button').forEach(function(b){b.classList.remove('active');});
     if(btn) btn.classList.add('active');
     window.scrollTo({top:0,behavior:'smooth'});
   }
 
   var chat=document.getElementById('chat'), quick=document.getElementById('quick'), audit=document.getElementById('audit');
   var pin=document.getElementById('pin');
-  // pin position mapping: floor 1530 -> 18%, offer scales up to ~1560 -> 100%
+  var UNITS=300000;                 // USDC the client is buying
+  var lockTimer=null;
   function pinFor(rate){ var pct=18+((rate-1530)/(1560-1530))*(100-18); return Math.max(6,Math.min(98,pct)); }
+  function ngn(rate){ return '₦'+(UNITS*rate).toLocaleString(); }
 
   function add(who,html,note){
     var m=document.createElement('div'); m.className='msg '+who; m.innerHTML=html+(note?('<small>'+note+'</small>'):'');
@@ -234,7 +254,7 @@
     var c=document.createElement('div'); c.className='enginechip'; c.innerHTML='⚙ engine · '+txt;
     chat.appendChild(c); chat.scrollTop=chat.scrollHeight;
   }
-  var t0=2; function ts(){ t0+=3; var s=(t0<10?'0':'')+t0; return '09:41:'+s; }
+  var t0=2; function ts(){ t0+=3; var s=(t0<10?'0':'')+t0; return '09:41:'+(s.length>2?s:('0'.repeat(2-s.length)+s)); }
   function log(html){
     var l=document.createElement('div'); l.className='ln'; l.innerHTML='<span class="t">['+ts()+']</span> '+html;
     audit.appendChild(l); audit.scrollTop=audit.scrollHeight;
@@ -245,32 +265,29 @@
       var el=document.createElement('button'); el.className='qbtn'+(b.cls?(' '+b.cls):''); el.innerHTML=b.label;
       el.onclick=b.fn; quick.appendChild(el);
     });
-    if(btns.hint){var h=document.createElement('div');h.className='qhint';h.textContent=btns.hint;quick.appendChild(h);}
   }
   function setOffer(rate,rung){
-    document.getElementById('d-offer').textContent=rate.toLocaleString()+' ₦/$';
+    document.getElementById('d-offer').textContent=rate.toLocaleString()+' ₦/USDC';
     pin.style.left=pinFor(rate)+'%';
     ['r0','r1','r2'].forEach(function(id){document.getElementById(id).classList.remove('on');});
     if(rung!=null) document.getElementById('r'+rung).classList.add('on');
   }
 
-  // ---- negotiation script ----
+  // ---- negotiation ----
   function start(){
-    setQuick([
-      {label:'💱 <b>Quote USDC → NGN</b>, 300,000 USDC',cls:'primary',fn:step1}
-    ]);
+    setQuick([{label:'💱 <b>Buy 300,000 USDC</b> with NGN',cls:'primary',fn:step1}]);
   }
   function step1(){
-    add('me','I want to convert <b>300,000 USDC to NGN</b>. What rate can you give me?');
-    document.getElementById('d-pair').textContent='USDC → NGN · 300,000';
-    log('rfq.received · USDC→NGN · notional=300,000 · client=MansaGold');
+    add('me','I want to buy <b>300,000 USDC</b> with naira. What rate can you give me?');
+    document.getElementById('d-pair').textContent='NGN → USDC · 300,000 USDC';
+    log('rfq.received · NGN→USDC · buy=300,000 USDC · client=MansaGold');
     setTimeout(function(){
       engineChip('computeQuote() → 1,548 (opening, mid−4)');
       log('engine.computeQuote → <b>1,548</b> · mid=1,552 floor=1,530');
-      add('bot','<span class="q">1,548 ₦/$</span>I can offer <b>1,548</b> for 300,000 USDC — that\'s ₦464,400,000, locked for 120s once you accept.','Opening quote from the engine');
+      add('bot','<span class="q">1,548 ₦/USDC</span>For 300,000 USDC that\'s '+ngn(1548)+'. Want to negotiate, or shall I lock it?','Opening quote from the engine');
       setOffer(1548,0);
       setQuick([
-        {label:'🤝 Accept 1,548',cls:'teal',fn:function(){accept(1548);} },
+        {label:'🤝 Take 1,548',cls:'teal',fn:function(){agree(1548);} },
         {label:'↩ Counter: "Can you do 1,560?"',fn:counter1}
       ]);
     },450);
@@ -281,10 +298,10 @@
     setTimeout(function(){
       engineChip('1,560 > mid — outside band · nextConcession() → 1,542');
       log('engine.check · 1,560 rejected (above mid) · nextConcession → <b>1,542</b>');
-      add('bot','I can\'t go above the market there. But I can improve to <span class="q">1,542 ₦/$</span> — ₦462,600,000.','Engine move 1 of 3');
+      add('bot','I can\'t go above the market there. But I can improve to <span class="q">1,542 ₦/USDC</span> — '+ngn(1542)+'.','Engine move 1 of 3');
       setOffer(1542,1);
       setQuick([
-        {label:'🤝 Accept 1,542',cls:'teal',fn:function(){accept(1542);} },
+        {label:'🤝 Take 1,542',cls:'teal',fn:function(){agree(1542);} },
         {label:'↩ Push: "Best you can do?"',fn:counter2}
       ]);
     },450);
@@ -295,10 +312,10 @@
     setTimeout(function(){
       engineChip('nextConcession() → 1,536 (final rung)');
       log('engine.nextConcession → <b>1,536</b> · 6 above floor · ladder exhausted');
-      add('bot','My best within policy is <span class="q">1,536 ₦/$</span> — ₦460,800,000. I can hold that for 120 seconds.','Final rung — engine will hold here');
+      add('bot','My best within policy is <span class="q">1,536 ₦/USDC</span> — '+ngn(1536)+' for 300,000 USDC.','Final rung — engine will hold here');
       setOffer(1536,2);
       setQuick([
-        {label:'🤝 Accept 1,536',cls:'teal',fn:function(){accept(1536);} },
+        {label:'🤝 Take 1,536',cls:'teal',fn:function(){agree(1536);} },
         {label:'↩ Try: "Come on, 1,532?"',fn:floorHold}
       ]);
     },450);
@@ -309,47 +326,106 @@
     setTimeout(function(){
       engineChip('1,532 < ladder · engine HOLDS · will not cross floor');
       log('engine.reject · 1,532 below allowable · holding at 1,536 · <b>Rule 0 enforced</b>');
-      add('bot','I hear you, but 1,536 is genuinely my floor for this deal — I\'m not able to go lower. Shall I lock it?','The agent cannot override the engine');
+      add('bot','I hear you, but 1,536 is genuinely my floor for this deal — I\'m not able to go lower.','The agent cannot override the engine');
       pin.style.left=pinFor(1536)+'%';
       setQuick([
-        {label:'🔒 Lock &amp; execute at 1,536',cls:'teal',fn:function(){accept(1536);} },
-        {label:'✋ Leave it for now',fn:function(){ add('me','Let me think about it.'); log('session.pause · no deal'); setQuick([{label:'↺ Restart negotiation',cls:'primary',fn:reset}]); }}
+        {label:'🤝 Take 1,536',cls:'teal',fn:function(){agree(1536);} },
+        {label:'✋ Leave it for now',fn:function(){ add('me','Let me think about it.'); log('session.pause · no deal'); setQuick([{label:'↺ Start over',cls:'primary',fn:reset}]); }}
       ]);
     },450);
   }
-  function accept(rate){
-    add('me','Deal — lock <b>'+rate.toLocaleString()+'</b>.');
-    log('client.accept · rate='+rate.toLocaleString()+' · lock quoteId=QT-7F3K9Q TTL=120s');
-    engineChip('rateLock(QT-7F3K9Q) · TTL 120s');
-    setQuick([]);
-    setTimeout(execute,500);
+
+  // ---- agreed: lock or proceed ----
+  var agreedRate=0;
+  function agree(rate){
+    agreedRate=rate;
+    add('me','Let\'s go with <b>'+rate.toLocaleString()+'</b>.');
+    log('client.agree · rate='+rate.toLocaleString()+' · quoteId=QT-7F3K9Q');
+    setTimeout(function(){
+      add('bot','<span class="q">'+rate.toLocaleString()+' ₦/USDC</span>You\'re buying <b>300,000 USDC</b> for <b>'+ngn(rate)+'</b>. You can lock this rate for 15 minutes, or proceed now.','Choose how to continue');
+      setQuick([
+        {label:'🔒 Lock rate for 15:00',cls:'ghost',fn:lockRate},
+        {label:'⚡ Proceed with trade',cls:'teal',fn:proceed}
+      ]);
+    },420);
   }
-  function execute(){
-    var steps=[['Rate lock','quoteId QT-7F3K9Q'],['Compliance','KYB · AML · sanctions'],['Hedge / reserve','liquidity secured'],['Collect funds','300,000 USDC debited'],['Settle','₦460,800,000 · rails'],['Confirm + ledger','receipt issued']];
-    var box=add('bot','<b>Executing your trade</b>','Atomic — completes fully or unwinds cleanly');
+  function lockRate(){
+    add('me','Lock it for now.');
+    log('rateLock(QT-7F3K9Q) · rate='+agreedRate.toLocaleString()+' · TTL=15:00');
+    engineChip('rateLock(QT-7F3K9Q) · TTL 15:00');
+    var box=add('bot','Rate locked. I\'ll hold <b>'+agreedRate.toLocaleString()+'</b> for you — proceed whenever you\'re ready.');
+    var cd=document.createElement('div'); cd.className='countdown locked'; box.appendChild(cd);
+    var left=15*60;
+    function tick(){ var m=Math.floor(left/60), s=left%60; cd.textContent='🔒 Rate locked · '+m+':'+(s<10?'0':'')+s+' remaining'; if(left<=0){clearInterval(lockTimer); cd.textContent='Rate lock expired — re-quote needed'; cd.className='countdown';} left--; }
+    tick(); if(lockTimer) clearInterval(lockTimer); lockTimer=setInterval(tick,1000);
+    setQuick([{label:'⚡ Proceed with trade',cls:'teal',fn:proceed}]);
+  }
+  function proceed(){
+    if(lockTimer){clearInterval(lockTimer);lockTimer=null;}
+    add('me','Proceed with the trade.');
+    log('client.proceed · generating NGN virtual account');
+    setTimeout(function(){
+      var box=add('bot','Please transfer <b>'+ngn(agreedRate)+'</b> to this one-time account. I\'ll detect it automatically.','Step 1 of 3 · Fund in NGN');
+      var v=document.createElement('div'); v.className='vacct'; box.appendChild(v);
+      v.innerHTML='<div class="vrow"><span class="k">Bank</span><span class="v">Providus Bank</span></div>'+
+        '<div class="vrow"><span class="k">Account number</span><span class="v">9928 4471 02 <span class="copy" onclick="copyMock(this)">Copy</span></span></div>'+
+        '<div class="vrow"><span class="k">Account name</span><span class="v">Afriex / Mansa Gold</span></div>'+
+        '<div class="vrow"><span class="k">Amount</span><span class="v">'+ngn(agreedRate)+' <span class="copy" onclick="copyMock(this)">Copy</span></span></div>';
+      var cd=document.createElement('div'); cd.className='countdown'; cd.textContent='⏱ Transfer within 15:00 to keep your locked rate'; box.appendChild(cd);
+      log('vaccount.issued · Providus · 992844 7102 · expected='+ngn(agreedRate));
+      setQuick([{label:'✅ I\'ve sent '+ngn(agreedRate),cls:'teal',fn:confirmFunds}]);
+    },420);
+  }
+  function confirmFunds(){
+    add('me','I\'ve sent the funds.');
+    log('payment.detecting · matching inbound NGN transfer…');
+    setTimeout(function(){
+      engineChip('funds confirmed · '+ngn(agreedRate)+' received');
+      log('payment.confirmed · <b>'+ngn(agreedRate)+'</b> received · ref=NGN-IN-88213');
+      var box=add('bot','<div class="success-ic">✓</div><div style="text-align:center"><b>Payment received</b><br>'+ngn(agreedRate)+' confirmed</div>');
+      setTimeout(function(){
+        var b2=add('bot','Where should I send your <b>300,000 USDC</b>? Paste your wallet address.','Step 2 of 3 · Receive in USDC');
+        var f=document.createElement('div'); f.className='winput'; b2.appendChild(f);
+        f.innerHTML='<input id="wallet" spellcheck="false" />'+
+          '<button onclick="submitWallet()">Send 300,000 USDC →</button>';
+        var inp=b2.querySelector('#wallet'); inp.value='0x7A2f9C4b8Ee1D30a5C6f2B91aE47dF083c1b6E29'; inp.onfocus=function(){this.select();}; inp.focus(); inp.select();
+        setQuick([]);
+      },700);
+    },1100);
+  }
+  function submitWallet(){
+    var inp=document.getElementById('wallet'); var addr=(inp&&inp.value)?inp.value.trim():'';
+    if(!addr||addr.indexOf('0x')!==0){ if(inp){inp.style.borderColor='#C0392B';} return; }
+    var shortA=addr.slice(0,6)+'…'+addr.slice(-4);
+    add('me','Send to <b>'+shortA+'</b>');
+    log('client.wallet · '+shortA+' · chain=Ethereum · asset=USDC');
+    var box=add('bot','<b>Settling on-chain</b>','Step 3 of 3 · Disbursing USDC');
     var ex=document.createElement('div'); ex.className='exec'; box.appendChild(ex);
-    steps.forEach(function(s,i){
-      var row=document.createElement('div'); row.className='estep'; row.id='ex'+i;
-      row.innerHTML='<span class="b">'+(i+1)+'</span><span><b>'+s[0]+'</b> · '+s[1]+'</span>'; ex.appendChild(row);
-    });
+    var steps=[['Compliance','KYB · AML · sanctions'],['Wallet screening','address risk check'],['Broadcast','USDC transfer signed'],['Confirmed','on-chain']];
+    steps.forEach(function(s,i){ var r=document.createElement('div'); r.className='estep'; r.id='ex'+i; r.innerHTML='<span class="b">'+(i+1)+'</span><span><b>'+s[0]+'</b> · '+s[1]+'</span>'; ex.appendChild(r); });
     var i=0;
     (function run(){
       if(i>0) document.getElementById('ex'+(i-1)).className='estep done';
       if(i<steps.length){
-        var r=document.getElementById('ex'+i); r.className='estep active';
+        document.getElementById('ex'+i).className='estep active';
         log('exec.'+steps[i][0].toLowerCase().replace(/[^a-z]/g,'')+' · ok');
-        i++; chat.scrollTop=chat.scrollHeight; setTimeout(run,700);
+        i++; chat.scrollTop=chat.scrollHeight; setTimeout(run,650);
       } else {
-        var done=add('bot','');
-        done.innerHTML='<div class="success-ic">✓</div><div style="text-align:center"><b>Trade complete</b><br>300,000 USDC → ₦460,800,000 @ 1,536<br><small>Ref AFX-FX-7F3K9Q · settled &amp; ledgered</small></div>';
-        log('exec.confirm · <b>settled</b> · ref=AFX-FX-7F3K9Q · audit sealed');
-        setQuick([{label:'↺ Run another negotiation',cls:'primary',fn:reset}]);
+        var hash='0x'+'9f3c8a12d7b4e6015a2f9c4b8ee1d30a5c6f2b91ae47df083c1b6e29a7d4f5b02';
+        var done=add('bot','<div class="success-ic">✓</div><div style="text-align:center"><b>Trade complete</b><br>300,000 USDC sent to '+shortA+'<br><small>Paid '+ngn(agreedRate)+' @ '+agreedRate.toLocaleString()+' ₦/USDC</small></div>');
+        var hb=document.createElement('div'); hb.className='hashbox'; done.appendChild(hb);
+        hb.innerHTML='<div class="lbl">Transaction hash</div>'+hash+'<br><br><a href="#" onclick="alert(\'Prototype: opens block explorer\');return false;">View on explorer ↗</a> &nbsp; <span class="copy" onclick="copyMock(this)" style="color:#6fd7c4;border-color:#33485f">Copy</span>';
+        log('exec.settled · USDC transfer · tx=0x9f3c8a12…5b02 · <b>confirmed</b> · audit sealed');
+        setQuick([{label:'↺ Run another trade',cls:'primary',fn:reset}]);
       }
     })();
   }
+
+  function copyMock(el){ var t=el.textContent; el.textContent='Copied ✓'; setTimeout(function(){el.textContent=t;},1200); }
   function reset(){
-    chat.innerHTML='<div class="msg bot">Hi Amara 👋 I can quote and lock a rate for you. What would you like to trade today?</div>';
-    document.getElementById('d-pair').textContent='USDC → NGN · —';
+    if(lockTimer){clearInterval(lockTimer);lockTimer=null;}
+    chat.innerHTML='<div class="msg bot">Hi Amara 👋 I can quote and execute a trade for you. What would you like to do today?</div>';
+    document.getElementById('d-pair').textContent='NGN → USDC · —';
     setOffer(1552,null); document.getElementById('d-offer').textContent='—'; pin.style.left='70%';
     log('session.restart');
     start();
