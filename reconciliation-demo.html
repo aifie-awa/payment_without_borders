@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Automated Reconciliation Engine — Demo</title>
+<style>
+  :root{
+    --ink:#0f1f2b; --muted:#5c6b78; --line:#e2e8ee; --bg:#f4f7fa; --card:#ffffff;
+    --teal:#5B3DF5; --teal2:#3F27C4; --navy:#2d2250;
+    --ok:#1b8f5a; --okbg:#e7f6ee;
+    --warn:#b9771a; --warnbg:#fbf2e3;
+    --bad:#c23b32; --badbg:#fbeae8;
+    --info:#2563a8; --infobg:#e8f0fa;
+    --purple:#6b4bb0; --purplebg:#efeafa;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font-family:'Inter',-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:14px;}
+  .wrap{max-width:1160px;margin:0 auto;padding:22px 22px 40px;}
+  header.top{border-bottom:3px solid var(--teal);padding-bottom:14px;margin-bottom:18px;}
+  header.top h1{margin:0 0 4px;font-size:22px;color:var(--navy);letter-spacing:.2px;}
+  header.top p{margin:0;color:var(--muted);font-size:13px;}
+  .tagrow{margin-top:9px;display:flex;gap:7px;flex-wrap:wrap;}
+  .chiptag{font-size:11px;background:#eef4f4;color:var(--teal2);border:1px solid #d6e6e6;border-radius:20px;padding:3px 11px;font-weight:600;}
+
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:16px;box-shadow:0 1px 2px rgba(16,31,43,.04);}
+  .panel h2{margin:0 0 3px;font-size:13px;text-transform:uppercase;letter-spacing:.6px;color:var(--teal2);}
+  .panel .hint{color:var(--muted);font-size:12px;margin:0 0 12px;}
+
+  .feeds{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .feed{border:1px solid var(--line);border-radius:10px;overflow:hidden;}
+  .feedhead{padding:9px 13px;color:#fff;display:flex;justify-content:space-between;align-items:center;}
+  .feedhead.int{background:var(--navy);}
+  .feedhead.ext{background:var(--teal);}
+  .feedhead .nm{font-size:13px;font-weight:700;}
+  .feedhead .ct{font-size:12px;opacity:.9;}
+  .feedbody{padding:10px 13px;font-size:12px;color:var(--muted);line-height:1.6;}
+  .feedbody b{color:var(--ink);}
+  .src{display:inline-block;font-size:10.5px;background:#eef2f6;border-radius:5px;padding:1px 7px;margin-left:5px;color:#44525e;}
+
+  .controls{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;margin-top:4px;}
+  .ctl{display:flex;flex-direction:column;gap:4px;}
+  .ctl label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;}
+  .ctl input{width:110px;padding:7px 9px;border:1px solid var(--line);border-radius:7px;font-size:13px;}
+  .runbtn{background:var(--teal);color:#fff;border:none;border-radius:8px;padding:11px 22px;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.2px;}
+  .runbtn:hover{background:var(--teal2);}
+  .resetbtn{background:#eef2f6;color:#44525e;border:1px solid var(--line);border-radius:8px;padding:11px 16px;font-size:13px;font-weight:600;cursor:pointer;}
+
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:4px;}
+  .kpi{border:1px solid var(--line);border-radius:10px;padding:13px 15px;background:var(--card);}
+  .kpi .lab{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:5px;}
+  .kpi .val{font-size:26px;font-weight:800;color:var(--navy);line-height:1;}
+  .kpi .sub{font-size:11.5px;color:var(--muted);margin-top:4px;}
+  .kpi.good .val{color:var(--ok);}
+  .kpi.bad .val{color:var(--bad);}
+
+  .bars{margin-top:6px;}
+  .barrow{display:flex;align-items:center;gap:10px;margin-bottom:7px;font-size:12.5px;}
+  .barrow .blab{width:168px;color:var(--ink);display:flex;align-items:center;gap:7px;}
+  .barrow .dot{width:9px;height:9px;border-radius:2px;flex:none;}
+  .bartrack{flex:1;background:#eef2f6;border-radius:6px;height:16px;overflow:hidden;}
+  .barfill{height:100%;border-radius:6px;}
+  .barrow .bct{width:92px;text-align:right;color:var(--muted);font-variant-numeric:tabular-nums;}
+
+  .filters{display:flex;flex-wrap:wrap;gap:7px;margin:4px 0 12px;}
+  .fchip{font-size:12px;border:1px solid var(--line);background:#fff;border-radius:20px;padding:5px 13px;cursor:pointer;color:#44525e;font-weight:600;}
+  .fchip.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+  .fchip .n{opacity:.7;font-weight:500;margin-left:4px;}
+
+  table{width:100%;border-collapse:collapse;}
+  th,td{text-align:left;padding:8px 10px;font-size:12.5px;border-bottom:1px solid #eef2f6;white-space:nowrap;}
+  th{font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);background:#fafcfd;position:sticky;top:0;}
+  td.num{text-align:right;font-variant-numeric:tabular-nums;}
+  .mismatch{color:var(--bad);font-weight:700;}
+  .tablewrap{max-height:460px;overflow:auto;border:1px solid var(--line);border-radius:10px;}
+  .badge{font-size:11px;font-weight:700;border-radius:20px;padding:3px 10px;display:inline-block;white-space:nowrap;}
+  .b-ok{background:var(--okbg);color:var(--ok);}
+  .b-tol{background:var(--infobg);color:var(--info);}
+  .b-amt{background:var(--badbg);color:var(--bad);}
+  .b-ccy{background:var(--badbg);color:var(--bad);}
+  .b-stat{background:var(--warnbg);color:var(--warn);}
+  .b-date{background:var(--warnbg);color:var(--warn);}
+  .b-noext{background:var(--badbg);color:var(--bad);}
+  .b-noint{background:var(--purplebg);color:var(--purple);}
+  .b-dup{background:var(--purplebg);color:var(--purple);}
+  .reason{color:var(--muted);font-size:11.5px;white-space:normal;max-width:260px;}
+  .empty{padding:30px;text-align:center;color:var(--muted);font-size:13px;}
+  .prerun{padding:26px;text-align:center;color:var(--muted);font-size:13px;border:1px dashed var(--line);border-radius:10px;}
+  .foot{color:var(--muted);font-size:11.5px;margin-top:14px;line-height:1.5;}
+  .hide{display:none;}
+  .expbtn{background:#eef2f6;border:1px solid var(--line);border-radius:7px;padding:7px 13px;font-size:12px;font-weight:600;color:#44525e;cursor:pointer;float:right;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>Automated Reconciliation Engine</h1>
+    <p>Replaces the manual, spreadsheet-based match between the internal ledger and partner-processor settlement reports — on a unique transaction reference, with amount, currency, status and date tolerances.</p>
+    <div class="tagrow">
+      <span class="chiptag">Unique reference = match key</span>
+      <span class="chiptag">SFTP / API daily feeds</span>
+      <span class="chiptag">Multi-field tolerance matching</span>
+      <span class="chiptag">Break taxonomy + exceptions</span>
+    </div>
+  </header>
+
+  <!-- FEEDS -->
+  <div class="panel">
+    <h2>1 · Inputs</h2>
+    <p class="hint">Two sources are loaded for a settlement day. In production these arrive automatically — a daily file over <b>SFTP</b> or a pull from the processor's <b>transactions API</b> — and every record carries the unique reference your platform assigned at initiation.</p>
+    <div class="feeds">
+      <div class="feed">
+        <div class="feedhead int"><span class="nm">Internal Ledger</span><span class="ct" id="intCount">— records</span></div>
+        <div class="feedbody">Your system of record — every transaction your platform initiated, with the <b>reference</b> it stamped at creation.<span class="src">source: core ledger</span></div>
+      </div>
+      <div class="feed">
+        <div class="feedhead ext"><span class="nm">Processor Reports</span><span class="ct" id="extCount">— records</span></div>
+        <div class="feedbody">Combined settlement feeds from partner processors <b>RailPay</b> (bank/card) and <b>NovaRails</b> (stablecoin off-ramp).<span class="src">SFTP</span><span class="src">API</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="panel">
+    <h2>2 · Match rules</h2>
+    <p class="hint">Primary match is exact on the unique reference. A matched pair is then validated on amount, currency, status and settlement date — within the tolerances below — before it's cleared.</p>
+    <div class="controls">
+      <div class="ctl">
+        <label>Amount tolerance (%)</label>
+        <input id="amtTol" type="number" value="0.5" step="0.1" min="0">
+      </div>
+      <div class="ctl">
+        <label>Date window (days)</label>
+        <input id="dateTol" type="number" value="1" step="1" min="0">
+      </div>
+      <button class="runbtn" onclick="runRecon()">▶ Run reconciliation</button>
+      <button class="resetbtn" onclick="resetRecon()">Reset</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="panel">
+    <h2>3 · Results</h2>
+    <div id="prerun" class="prerun">Set your tolerances and press <b>Run reconciliation</b> to match the two feeds.</div>
+
+    <div id="results" class="hide">
+      <div class="cards" id="kpis"></div>
+      <div class="bars" id="bars" style="margin-top:16px;"></div>
+
+      <div style="margin-top:18px;">
+        <button class="expbtn" onclick="exportExceptions()">⬇ Export exceptions (CSV)</button>
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--teal2);font-weight:700;padding-top:6px;">Transaction detail</div>
+      </div>
+      <div class="filters" id="filters"></div>
+      <div class="tablewrap">
+        <table>
+          <thead><tr>
+            <th>Reference</th><th>Corridor</th><th>Processor</th>
+            <th class="num">Ledger amt</th><th class="num">Processor amt</th><th>Ccy</th>
+            <th>Ledger status</th><th>Proc. status</th><th>Date Δ</th>
+            <th>Result</th><th>Reason</th>
+          </tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <p class="foot" id="foot"></p>
+    </div>
+  </div>
+
+  <p class="foot">Demo with synthetic data for portfolio illustration. The engine, break taxonomy and tolerance logic mirror a production reconciliation service; figures are not real settlement data.</p>
+</div>
+
+<script>
+// ---------- SYNTHETIC DATA ----------
+// Internal ledger = system of record. Each txn: ref, date, corridor, amount, ccy, status, psp
+const internal = [
+  {ref:'AFX-24-1001', date:'2026-10-01', corridor:'NGN→USD', amount:500.00, ccy:'USD', status:'SUCCESS', psp:'RailPay'},
+  {ref:'AFX-24-1002', date:'2026-10-01', corridor:'KES→USD', amount:1200.00, ccy:'USD', status:'SUCCESS', psp:'RailPay'},
+  {ref:'AFX-24-1003', date:'2026-10-01', corridor:'GHS→USD', amount:340.25, ccy:'USD', status:'SUCCESS', psp:'NovaRails'},
+  {ref:'AFX-24-1004', date:'2026-10-01', corridor:'NGN→GBP', amount:780.00, ccy:'GBP', status:'SUCCESS', psp:'RailPay'},
+  {ref:'AFX-24-1005', date:'2026-10-01', corridor:'UGX→USD', amount:300.00, ccy:'USD', status:'SUCCESS', psp:'NovaRails'}, // amount mismatch
+  {ref:'AFX-24-1006', date:'2026-10-01', corridor:'KES→EUR', amount:950.00, ccy:'EUR', status:'SUCCESS', psp:'RailPay'},
+  {ref:'AFX-24-1007', date:'2026-10-01', corridor:'NGN→USD', amount:420.00, ccy:'USD', status:'SUCCESS', psp:'NovaRails'}, // currency mismatch
+  {ref:'AFX-24-1008', date:'2026-10-01', corridor:'ZAR→USD', amount:610.00, ccy:'USD', status:'SUCCESS', psp:'RailPay'}, // status mismatch
+  {ref:'AFX-24-1009', date:'2026-10-01', corridor:'GHS→GBP', amount:275.50, ccy:'GBP', status:'SUCCESS', psp:'RailPay'},
+  {ref:'AFX-24-1010', date:'2026-10-01', corridor:'NGN→USD', amount:1500.00, ccy:'USD', status:'SUCCESS', psp:'NovaRails'},
+  {ref:'AFX-24-1011', date:'2026-10-01', corridor:'KES→USD', amount:250.00, ccy:'USD', status:'SUCCESS', psp:'RailPay'}, // within-tolerance amt diff
+  {ref:'AFX-24-1012', date:'2026-10-01', corridor:'UGX→EUR', amount:880.00, ccy:'EUR', status:'SUCCESS', psp:'NovaRails'},
+  {ref:'AFX-24-1013', date:'2026-10-01', corridor:'NGN→USD', amount:95.00, ccy:'USD', status:'SUCCESS', psp:'RailPay'},
+  {ref:'AFX-24-1014', date:'2026-09-30', corridor:'ZAR→GBP', amount:1340.00, ccy:'GBP', status:'SUCCESS', psp:'RailPay'}, // date break (settles +3d)
+  {ref:'AFX-24-1015', date:'2026-10-01', corridor:'GHS→USD', amount:560.75, ccy:'USD', status:'SUCCESS', psp:'NovaRails'},
+  {ref:'AFX-24-1016', date:'2026-10-01', corridor:'KES→USD', amount:430.00, ccy:'USD', status:'SUCCESS', psp:'RailPay'},
+  {ref:'AFX-24-1017', date:'2026-10-01', corridor:'NGN→GBP', amount:2100.00, ccy:'GBP', status:'SUCCESS', psp:'NovaRails'}, // missing at processor
+  {ref:'AFX-24-1018', date:'2026-10-01', corridor:'UGX→USD', amount:180.00, ccy:'USD', status:'SUCCESS', psp:'RailPay'},
+  {ref:'AFX-24-1019', date:'2026-10-01', corridor:'NGN→USD', amount:725.00, ccy:'USD', status:'SUCCESS', psp:'NovaRails'},
+  {ref:'AFX-24-1020', date:'2026-10-01', corridor:'KES→EUR', amount:640.00, ccy:'EUR', status:'SUCCESS', psp:'RailPay'}, // duplicated at processor
+  {ref:'AFX-24-1021', date:'2026-10-01', corridor:'GHS→USD', amount:310.00, ccy:'USD', status:'SUCCESS', psp:'NovaRails'},
+  {ref:'AFX-24-1022', date:'2026-10-01', corridor:'NGN→USD', amount:1980.00, ccy:'USD', status:'SUCCESS', psp:'RailPay'},
+];
+
+// Build processor feed by copying internal and seeding real-world discrepancies
+function buildExternal(){
+  const ext = [];
+  internal.forEach(t => {
+    if(t.ref==='AFX-24-1017') return;                       // missing at processor (unmatched internal)
+    const e = {ref:t.ref, date:t.date, corridor:t.corridor, amount:t.amount, ccy:t.ccy, status:t.status, psp:t.psp};
+    if(t.ref==='AFX-24-1005'){ e.amount = 330.00; }         // amount mismatch (+10%)
+    if(t.ref==='AFX-24-1007'){ e.ccy = 'EUR'; }             // currency mismatch
+    if(t.ref==='AFX-24-1008'){ e.status = 'PENDING'; }      // status mismatch
+    if(t.ref==='AFX-24-1011'){ e.amount = 250.50; }         // +0.2% -> within default tolerance
+    if(t.ref==='AFX-24-1014'){ e.date = '2026-10-03'; }     // settles 3 days later -> date break at 1d window
+    ext.push(e);
+    if(t.ref==='AFX-24-1020'){                              // duplicate at processor
+      ext.push({ref:t.ref, date:t.date, corridor:t.corridor, amount:t.amount, ccy:t.ccy, status:t.status, psp:t.psp});
+    }
+  });
+  // extra record present only at processor (missing in ledger — possible unrecorded/fraud/mis-booked)
+  ext.push({ref:'AFX-24-1099', date:'2026-10-01', corridor:'NGN→USD', amount:540.00, ccy:'USD', status:'SUCCESS', psp:'NovaRails'});
+  return ext;
+}
+const external = buildExternal();
+
+document.getElementById('intCount').textContent = internal.length + ' records';
+document.getElementById('extCount').textContent = external.length + ' records';
+
+// ---------- ENGINE ----------
+const CATS = {
+  MATCHED:   {label:'Matched', cls:'b-ok', dot:'var(--ok)'},
+  TOLERANCE: {label:'Matched (within tolerance)', cls:'b-tol', dot:'var(--info)'},
+  AMOUNT:    {label:'Amount mismatch', cls:'b-amt', dot:'var(--bad)'},
+  CURRENCY:  {label:'Currency mismatch', cls:'b-ccy', dot:'var(--bad)'},
+  STATUS:    {label:'Status mismatch', cls:'b-stat', dot:'var(--warn)'},
+  DATE:      {label:'Date-window break', cls:'b-date', dot:'var(--warn)'},
+  NO_EXT:    {label:'Missing at processor', cls:'b-noext', dot:'var(--bad)'},
+  NO_INT:    {label:'Missing in ledger', cls:'b-noint', dot:'var(--purple)'},
+  DUPLICATE: {label:'Duplicate at processor', cls:'b-dup', dot:'var(--purple)'},
+};
+let lastRun = [];
+let activeFilter = 'ALL';
+
+function daysBetween(a,b){ return Math.abs((new Date(a)-new Date(b))/86400000); }
+
+function reconcile(amtTolPct, dateTolDays){
+  const results = [];
+  const extByRef = {};
+  external.forEach(e => { (extByRef[e.ref] = extByRef[e.ref] || []).push(e); });
+  const intRefs = new Set(internal.map(t=>t.ref));
+
+  internal.forEach(t => {
+    const matches = extByRef[t.ref];
+    if(!matches || matches.length===0){
+      results.push({ref:t.ref, corridor:t.corridor, psp:t.psp, intAmt:t.amount, extAmt:null,
+        ccy:t.ccy, extCcy:null, intStatus:t.status, extStatus:null, dDelta:null,
+        cat:'NO_EXT', reason:'In ledger but absent from every processor report — investigate non-settlement or missing feed.'});
+      return;
+    }
+    if(matches.length>1){
+      results.push({ref:t.ref, corridor:t.corridor, psp:t.psp, intAmt:t.amount, extAmt:matches[0].amount,
+        ccy:t.ccy, extCcy:matches[0].ccy, intStatus:t.status, extStatus:matches[0].status, dDelta:0,
+        cat:'DUPLICATE', reason:'Processor reported this reference '+matches.length+' times — likely double-posting; de-dupe before settlement.'});
+      return;
+    }
+    const e = matches[0];
+    if(t.ccy !== e.ccy){
+      results.push(row(t,e,'CURRENCY','Currency differs (ledger '+t.ccy+' vs processor '+e.ccy+') — cannot net; route to FX/treasury.')); return;
+    }
+    const diff = Math.abs(t.amount - e.amount);
+    const tolAbs = t.amount * (amtTolPct/100);
+    if(diff > tolAbs){
+      results.push(row(t,e,'AMOUNT','Amount differs by '+fmt(diff)+' '+t.ccy+' ('+(100*diff/t.amount).toFixed(2)+'%), beyond '+amtTolPct+'% tolerance.')); return;
+    }
+    if(t.status !== e.status){
+      results.push(row(t,e,'STATUS','Ledger '+t.status+' vs processor '+e.status+' — settlement-state conflict; hold and confirm.')); return;
+    }
+    const dd = daysBetween(t.date, e.date);
+    if(dd > dateTolDays){
+      results.push(row(t,e,'DATE','Settlement date differs by '+dd+' day(s), beyond '+dateTolDays+'-day window — timing break; confirm value date.')); return;
+    }
+    if(diff > 0){
+      results.push(row(t,e,'TOLERANCE','Amount differs by '+fmt(diff)+' '+t.ccy+' ('+(100*diff/t.amount).toFixed(2)+'%) — within tolerance (FX rounding), auto-cleared.')); return;
+    }
+    results.push(row(t,e,'MATCHED','Exact match on reference, amount, currency, status and date.'));
+  });
+
+  // records only at processor
+  external.forEach(e => {
+    if(!intRefs.has(e.ref)){
+      results.push({ref:e.ref, corridor:e.corridor, psp:e.psp, intAmt:null, extAmt:e.amount,
+        ccy:null, extCcy:e.ccy, intStatus:null, extStatus:e.status, dDelta:null,
+        cat:'NO_INT', reason:'Present at processor but not in ledger — possible unrecorded, mis-booked or fraudulent entry; escalate.'});
+    }
+  });
+  return results;
+}
+function row(t,e,cat,reason){
+  return {ref:t.ref, corridor:t.corridor, psp:t.psp, intAmt:t.amount, extAmt:e.amount,
+    ccy:t.ccy, extCcy:e.ccy, intStatus:t.status, extStatus:e.status, dDelta:daysBetween(t.date,e.date),
+    cat:cat, reason:reason};
+}
+function fmt(n){ return n==null?'—':n.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}); }
+
+// ---------- RENDER ----------
+function runRecon(){
+  const amtTol = parseFloat(document.getElementById('amtTol').value)||0;
+  const dateTol = parseInt(document.getElementById('dateTol').value)||0;
+  lastRun = reconcile(amtTol, dateTol);
+  activeFilter = 'ALL';
+  document.getElementById('prerun').classList.add('hide');
+  document.getElementById('results').classList.remove('hide');
+  renderKpis(); renderBars(); renderFilters(); renderRows();
+}
+function resetRecon(){
+  lastRun=[]; document.getElementById('results').classList.add('hide');
+  document.getElementById('prerun').classList.remove('hide');
+}
+function counts(){
+  const c={}; Object.keys(CATS).forEach(k=>c[k]=0);
+  lastRun.forEach(r=>c[r.cat]++); return c;
+}
+function renderKpis(){
+  const c=counts();
+  const matched = c.MATCHED + c.TOLERANCE;
+  const total = internal.length;
+  const exceptions = lastRun.length - matched;
+  const matchedVal = lastRun.filter(r=>r.cat==='MATCHED'||r.cat==='TOLERANCE').reduce((s,r)=>s+(r.intAmt||0),0);
+  const totalVal = internal.reduce((s,t)=>s+t.amount,0);
+  const rate = (100*matched/total);
+  const el = document.getElementById('kpis');
+  el.innerHTML = `
+    <div class="kpi good"><div class="lab">Auto-matched</div><div class="val">${matched}</div><div class="sub">of ${total} ledger txns</div></div>
+    <div class="kpi"><div class="lab">Match rate</div><div class="val">${rate.toFixed(1)}%</div><div class="sub">straight-through</div></div>
+    <div class="kpi bad"><div class="lab">Exceptions</div><div class="val">${exceptions}</div><div class="sub">need review</div></div>
+    <div class="kpi"><div class="lab">Value cleared</div><div class="val">${(100*matchedVal/totalVal).toFixed(1)}%</div><div class="sub">${fmt(matchedVal)} of ${fmt(totalVal)}</div></div>`;
+}
+function renderBars(){
+  const c=counts();
+  const order=['MATCHED','TOLERANCE','AMOUNT','CURRENCY','STATUS','DATE','NO_EXT','NO_INT','DUPLICATE'];
+  const max=Math.max(...order.map(k=>c[k]),1);
+  document.getElementById('bars').innerHTML = order.filter(k=>c[k]>0).map(k=>{
+    const cat=CATS[k];
+    return `<div class="barrow">
+      <div class="blab"><span class="dot" style="background:${cat.dot}"></span>${cat.label}</div>
+      <div class="bartrack"><div class="barfill" style="width:${100*c[k]/max}%;background:${cat.dot}"></div></div>
+      <div class="bct">${c[k]} txn${c[k]>1?'s':''}</div></div>`;
+  }).join('');
+}
+function renderFilters(){
+  const c=counts();
+  const exc = lastRun.length - (c.MATCHED+c.TOLERANCE);
+  const defs=[['ALL','All',lastRun.length],['EXC','Exceptions only',exc],
+    ['MATCHED','Matched',c.MATCHED],['TOLERANCE','Within tolerance',c.TOLERANCE],
+    ['AMOUNT','Amount',c.AMOUNT],['CURRENCY','Currency',c.CURRENCY],['STATUS','Status',c.STATUS],
+    ['DATE','Date break',c.DATE],['NO_EXT','Missing at processor',c.NO_EXT],
+    ['NO_INT','Missing in ledger',c.NO_INT],['DUPLICATE','Duplicate',c.DUPLICATE]];
+  document.getElementById('filters').innerHTML = defs.filter(d=>d[0]==='ALL'||d[0]==='EXC'||d[2]>0)
+    .map(d=>`<span class="fchip ${activeFilter===d[0]?'active':''}" onclick="setFilter('${d[0]}')">${d[1]}<span class="n">${d[2]}</span></span>`).join('');
+}
+function setFilter(f){ activeFilter=f; renderFilters(); renderRows(); }
+function visible(){
+  if(activeFilter==='ALL') return lastRun;
+  if(activeFilter==='EXC') return lastRun.filter(r=>r.cat!=='MATCHED'&&r.cat!=='TOLERANCE');
+  return lastRun.filter(r=>r.cat===activeFilter);
+}
+function renderRows(){
+  const rows=visible();
+  const tb=document.getElementById('rows');
+  if(rows.length===0){ tb.innerHTML=`<tr><td colspan="11" class="empty">No transactions in this category.</td></tr>`; }
+  else {
+    tb.innerHTML = rows.map(r=>{
+      const cat=CATS[r.cat];
+      const amtCls = (r.cat==='AMOUNT') ? 'mismatch' : '';
+      const ccyTxt = r.ccy && r.extCcy && r.ccy!==r.extCcy ? `<span class="mismatch">${r.ccy}→${r.extCcy}</span>` : (r.ccy||r.extCcy||'—');
+      const stInt = r.intStatus||'—', stExt = r.extStatus||'—';
+      const stExtCls = (r.cat==='STATUS')?'mismatch':'';
+      const dd = r.dDelta==null?'—':(r.dDelta+'d');
+      const ddCls = (r.cat==='DATE')?'mismatch':'';
+      return `<tr>
+        <td>${r.ref}</td><td>${r.corridor}</td><td>${r.psp}</td>
+        <td class="num">${fmt(r.intAmt)}</td><td class="num ${amtCls}">${fmt(r.extAmt)}</td><td>${ccyTxt}</td>
+        <td>${stInt}</td><td class="${stExtCls}">${stExt}</td><td class="${ddCls}">${dd}</td>
+        <td><span class="badge ${cat.cls}">${cat.label}</span></td>
+        <td class="reason">${r.reason}</td></tr>`;
+    }).join('');
+  }
+  const c=counts(); const exc=lastRun.length-(c.MATCHED+c.TOLERANCE);
+  document.getElementById('foot').textContent =
+    `${lastRun.length} total rows reconciled · ${c.MATCHED+c.TOLERANCE} auto-cleared · ${exc} exceptions routed for review. In production these exceptions become a worklist with owner, age and resolution state.`;
+}
+function exportExceptions(){
+  const rows=lastRun.filter(r=>r.cat!=='MATCHED'&&r.cat!=='TOLERANCE');
+  const head=['reference','corridor','processor','ledger_amount','processor_amount','currency','ledger_status','processor_status','date_delta_days','break_type','reason'];
+  const lines=[head.join(',')].concat(rows.map(r=>[
+    r.ref,r.corridor,r.psp,r.intAmt??'',r.extAmt??'',(r.ccy||r.extCcy||''),
+    r.intStatus||'',r.extStatus||'',r.dDelta??'',CATS[r.cat].label,'"'+r.reason.replace(/"/g,'""')+'"'
+  ].join(',')));
+  const blob=new Blob([lines.join('\n')],{type:'text/csv'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='reconciliation_exceptions.csv'; a.click();
+}
+</script>
+</body>
+</html>

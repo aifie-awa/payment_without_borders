@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reconciliation System — Architecture</title>
+<style>
+  :root{
+    --ink:#0f1f2b; --muted:#5c6b78; --line:#d9e3ea; --bg:#eef2f5; --card:#fff;
+    --teal:#5B3DF5; --navy:#2d2250; --amber:#b9771a; --amberbg:#fbf3e6;
+    --ok:#1b8f5a; --purple:#6b4bb0;
+    --s1:#eaf3f3; --s2:#e8f0fa; --s3:#eef7f1; --s4:#faf0e6; --s5:#f0ecfa;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font-family:'Inter',-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}
+  .page{width:1180px;max-width:100%;margin:0 auto;background:#fff;padding:26px 30px 24px;}
+  header{border-bottom:3px solid var(--teal);padding-bottom:12px;margin-bottom:8px;}
+  h1{margin:0 0 3px;font-size:22px;color:var(--navy);}
+  .sub{margin:0;color:var(--muted);font-size:12.5px;}
+  .flow{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:0;align-items:stretch;margin-top:18px;}
+  .stage{position:relative;padding:0 9px;}
+  .stagehead{font-size:10px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--teal);text-align:center;margin-bottom:8px;}
+  .box{border:1px solid var(--line);border-radius:9px;padding:10px 11px;margin-bottom:9px;background:var(--card);}
+  .box .t{font-size:12.5px;font-weight:700;margin-bottom:3px;color:var(--ink);}
+  .box .d{font-size:10.5px;color:var(--muted);line-height:1.4;}
+  .s1 .box{background:var(--s1);} .s2 .box{background:var(--s2);} .s3 .box{background:var(--s3);}
+  .s4 .box{background:var(--s4);} .s5 .box{background:var(--s5);}
+  .arrow{position:absolute;top:50%;right:-7px;width:14px;height:14px;transform:translateY(-50%) rotate(45deg);
+    border-top:2px solid var(--teal);border-right:2px solid var(--teal);z-index:2;background:transparent;}
+  .pill{display:inline-block;font-size:9.5px;font-weight:700;border-radius:20px;padding:1px 7px;margin:2px 3px 0 0;}
+  .pill.sftp{background:#dff0f0;color:var(--teal);} .pill.api{background:#dde9f7;color:#2563a8;}
+  .engine{margin-top:16px;border:1px solid var(--line);border-radius:10px;overflow:hidden;}
+  .engine .eh{background:var(--navy);color:#fff;padding:7px 14px;font-size:12px;font-weight:700;letter-spacing:.3px;}
+  .engine .eb{display:grid;grid-template-columns:repeat(6,1fr);gap:9px;padding:12px 14px;}
+  .step{border:1px solid var(--line);border-radius:8px;padding:8px 9px;background:#fafcfd;}
+  .step .n{font-size:9px;font-weight:800;color:var(--teal);letter-spacing:.5px;}
+  .step .st{font-size:11px;font-weight:700;margin:2px 0;}
+  .step .sd{font-size:9.5px;color:var(--muted);line-height:1.35;}
+  .taxo{margin-top:16px;display:grid;grid-template-columns:1.3fr 1fr;gap:16px;}
+  .card2{border:1px solid var(--line);border-radius:10px;padding:11px 14px;}
+  .card2 h3{margin:0 0 8px;font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--teal);}
+  .tx{display:flex;align-items:center;gap:7px;font-size:11px;margin-bottom:5px;}
+  .tx .dot{width:9px;height:9px;border-radius:2px;flex:none;}
+  .tx b{color:var(--ink);} .tx span{color:var(--muted);}
+  .prin li{font-size:11px;color:var(--ink);line-height:1.5;margin-bottom:5px;}
+  .prin ul{margin:0;padding-left:16px;}
+  footer{margin-top:16px;font-size:10.5px;color:var(--muted);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+  .tag{background:var(--teal);color:#fff;border-radius:20px;padding:3px 11px;font-size:10px;}
+  @media print{html,body{background:#fff;}.page{width:100%;padding:0;}@page{size:A4 landscape;margin:10mm;}}
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <h1>Automated Reconciliation — System Architecture</h1>
+    <p class="sub">From partner-processor feeds to a cleared ledger and an exception worklist — unique transaction reference as the match key across internal and external systems.</p>
+  </header>
+
+  <!-- PIPELINE -->
+  <div class="flow">
+    <div class="stage s1">
+      <div class="stagehead">Sources</div>
+      <div class="box"><div class="t">Partner processors</div><div class="d">RailPay, NovaRails, banks, PSPs. Each contractually provides a daily settlement report.</div><span class="pill sftp">SFTP drop</span><span class="pill api">GET /transactions</span></div>
+      <div class="box"><div class="t">Internal ledger</div><div class="d">Your system of record. Stamps the unique reference on every txn at initiation.</div></div>
+      <div class="arrow"></div>
+    </div>
+    <div class="stage s2">
+      <div class="stagehead">Ingestion</div>
+      <div class="box"><div class="t">Feed collector</div><div class="d">Scheduled SFTP pickup + API pollers. Validates file arrival, schema, completeness; alerts on a missing or late feed.</div></div>
+      <div class="box"><div class="t">Raw store</div><div class="d">Immutable landing zone — every feed version retained for audit & replay.</div></div>
+      <div class="arrow"></div>
+    </div>
+    <div class="stage s3">
+      <div class="stagehead">Normalization</div>
+      <div class="box"><div class="t">Canonical mapper</div><div class="d">Each processor's format mapped to one schema: reference, amount, currency, status, value date, fees.</div></div>
+      <div class="box"><div class="t">Standardize</div><div class="d">Status vocab, currency codes, timezones & minor-units aligned. Fees separated from principal.</div></div>
+      <div class="arrow"></div>
+    </div>
+    <div class="stage s4">
+      <div class="stagehead">Matching engine</div>
+      <div class="box"><div class="t">Reference match</div><div class="d">Exact join on unique reference between ledger and processor records.</div></div>
+      <div class="box"><div class="t">Tolerance validation</div><div class="d">Amount %, currency, status, date-window checks on each matched pair.</div></div>
+      <div class="arrow"></div>
+    </div>
+    <div class="stage s5">
+      <div class="stagehead">Outputs</div>
+      <div class="box"><div class="t">Cleared ledger</div><div class="d">Auto-matched txns marked reconciled; feeds treasury & liquidity position.</div></div>
+      <div class="box"><div class="t">Exception worklist</div><div class="d">Breaks routed with type, owner, age & resolution state.</div></div>
+      <div class="box"><div class="t">Dashboard & alerts</div><div class="d">Match rate, value cleared, ageing; anomaly alerts.</div></div>
+    </div>
+  </div>
+
+  <!-- ENGINE DETAIL -->
+  <div class="engine">
+    <div class="eh">Matching engine — decision sequence</div>
+    <div class="eb">
+      <div class="step"><div class="n">STEP 1</div><div class="st">Join on reference</div><div class="sd">Unique ref present on both sides? If only one side → missing-record break.</div></div>
+      <div class="step"><div class="n">STEP 2</div><div class="st">Duplicate check</div><div class="sd">Reference appears more than once on a side → duplicate break.</div></div>
+      <div class="step"><div class="n">STEP 3</div><div class="st">Currency</div><div class="sd">Must be identical — otherwise FX/treasury break (can't net).</div></div>
+      <div class="step"><div class="n">STEP 4</div><div class="st">Amount ± tol</div><div class="sd">Within amount tolerance → ok; beyond → amount-mismatch break.</div></div>
+      <div class="step"><div class="n">STEP 5</div><div class="st">Status & date</div><div class="sd">Status must agree; value date within window, else timing break.</div></div>
+      <div class="step"><div class="n">STEP 6</div><div class="st">Clear or route</div><div class="sd">All pass → auto-cleared. Any fail → typed exception to worklist.</div></div>
+    </div>
+  </div>
+
+  <!-- TAXONOMY + PRINCIPLES -->
+  <div class="taxo">
+    <div class="card2">
+      <h3>Break taxonomy</h3>
+      <div class="tx"><span class="dot" style="background:var(--ok)"></span><b>Matched</b><span>— all fields agree (auto-cleared)</span></div>
+      <div class="tx"><span class="dot" style="background:#2563a8"></span><b>Within tolerance</b><span>— tiny FX/rounding diff, auto-cleared & logged</span></div>
+      <div class="tx"><span class="dot" style="background:var(--amber)"></span><b>Amount mismatch</b><span>— difference beyond tolerance</span></div>
+      <div class="tx"><span class="dot" style="background:#c23b32"></span><b>Currency mismatch</b><span>— cannot net; FX/treasury review</span></div>
+      <div class="tx"><span class="dot" style="background:var(--amber)"></span><b>Status mismatch</b><span>— settlement-state conflict</span></div>
+      <div class="tx"><span class="dot" style="background:var(--amber)"></span><b>Date-window break</b><span>— settles outside value-date window</span></div>
+      <div class="tx"><span class="dot" style="background:#c23b32"></span><b>Missing at processor</b><span>— in ledger, not settled</span></div>
+      <div class="tx"><span class="dot" style="background:var(--purple)"></span><b>Missing in ledger</b><span>— at processor, unrecorded (fraud/mis-book)</span></div>
+      <div class="tx"><span class="dot" style="background:var(--purple)"></span><b>Duplicate</b><span>— double-posted reference</span></div>
+    </div>
+    <div class="card2 prin">
+      <h3>Design principles</h3>
+      <ul>
+        <li><b>Reference is the contract.</b> A unique, processor-accepted reference on every txn is the single requirement that makes automated matching possible.</li>
+        <li><b>Feed a shared layer, don't duplicate it.</b> Normalized output and the ledger of record are consumed by treasury, finance & other product lines.</li>
+        <li><b>Exceptions are the product.</b> The value isn't the match — it's shrinking and ageing the break queue over time.</li>
+        <li><b>Auditable & replayable.</b> Raw feeds retained; every clear/break is explainable and re-runnable.</li>
+      </ul>
+    </div>
+  </div>
+
+  <footer>
+    <div><b>Requirements on each processor:</b> daily report via SFTP or transactions API · a unique, caller-supplied transaction reference accepted & echoed on every record · consistent status vocabulary · fees itemised separately.</div>
+    <div class="tag">Reference-keyed · tolerance-based · exception-first</div>
+  </footer>
+</div>
+</body>
+</html>
