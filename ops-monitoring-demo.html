@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Processor Health &amp; Failover Console — Demo</title>
+<style>
+  :root{
+    --brand:#5B3DF5;--brand-dark:#3F27C4;--brand-soft:#EEEAFE;
+    --ink:#14121F;--muted:#6B6880;--line:#E7E4F0;--bg:#F7F6FC;--card:#fff;
+    --ok:#0F9D58;--okbg:#E7F6EE;--bad:#D23B32;--badbg:#FBEAE8;--warn:#B9771A;--warnbg:#FBF2E3;--info:#2563A8;--infobg:#E8F0FA;
+    --radius:14px;--shadow:0 10px 34px rgba(30,20,80,.08);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:14px;line-height:1.5;}
+  .wrap{max-width:1180px;margin:0 auto;padding:20px 22px 44px;}
+  header.top{border-bottom:3px solid var(--brand);padding-bottom:12px;margin-bottom:16px;}
+  header.top h1{margin:0 0 4px;font-size:21px;letter-spacing:-.01em;}
+  header.top p{margin:0;color:var(--muted);font-size:12.5px;max-width:800px;}
+
+  .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:14px 0 6px;}
+  .live{display:flex;align-items:center;gap:7px;font-weight:700;font-size:13px;}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 rgba(15,157,88,.5);animation:pulse 1.6s infinite;}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(15,157,88,.45)}70%{box-shadow:0 0 0 7px rgba(15,157,88,0)}100%{box-shadow:0 0 0 0 rgba(15,157,88,0)}}
+  .dot.off{background:var(--muted);animation:none;}
+  .clock{font-variant-numeric:tabular-nums;color:var(--muted);font-size:13px;}
+  .ctl{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);}
+  .ctl input{width:62px;padding:6px 8px;border:1px solid var(--line);border-radius:7px;font-size:13px;font-family:inherit;}
+  .btn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 14px;font-weight:700;font-size:12.5px;cursor:pointer;color:var(--ink);}
+  .btn.p{background:var(--brand);color:#fff;border-color:var(--brand);} .btn.p:hover{background:var(--brand-dark);}
+  .btn.warn{background:var(--warnbg);color:var(--warn);border-color:#f0dcae;}
+  .btn:hover{border-color:var(--brand);}
+  .spacer{flex:1;}
+
+  .alerts{margin:6px 0 16px;display:flex;flex-direction:column;gap:10px;}
+  .alert{border-radius:12px;padding:13px 16px;border:1px solid;display:flex;gap:14px;align-items:center;flex-wrap:wrap;box-shadow:var(--shadow);}
+  .alert.warn{background:var(--warnbg);border-color:#f0dcae;}
+  .alert.crit{background:var(--badbg);border-color:#f3c9c4;}
+  .alert.prop{background:var(--infobg);border-color:#c7ddf5;}
+  .alert.ok{background:var(--okbg);border-color:#bfe6cf;}
+  .alert .atext{flex:1;min-width:260px;font-size:13px;}
+  .alert .atext b{display:block;font-size:13.5px;margin-bottom:2px;}
+  .alert .asub{color:var(--muted);font-size:12px;}
+  .alert .acta{display:flex;gap:8px;flex-wrap:wrap;}
+  .fund{display:inline-block;font-size:11px;font-weight:700;border-radius:20px;padding:2px 9px;margin-left:4px;}
+  .fund.ok{background:var(--okbg);color:var(--ok);} .fund.no{background:var(--badbg);color:var(--bad);}
+
+  .layout{display:grid;grid-template-columns:1.35fr 1fr;gap:16px;}
+  @media(max-width:900px){.layout{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:15px 17px;box-shadow:var(--shadow);margin-bottom:16px;}
+  .card h2{margin:0 0 10px;font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--brand-dark);}
+
+  .svc{border:1px solid var(--line);border-radius:11px;padding:11px 13px;margin-bottom:10px;}
+  .svc.sel{border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-soft);}
+  .svchead{display:flex;align-items:center;gap:10px;cursor:pointer;}
+  .svchead .nm{font-weight:700;font-size:13.5px;flex:1;}
+  .rate{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;}
+  .rate.g{color:var(--ok)} .rate.a{color:var(--warn)} .rate.r{color:var(--bad)}
+  .st{font-size:10.5px;font-weight:700;border-radius:20px;padding:2px 9px;}
+  .st.g{background:var(--okbg);color:var(--ok)} .st.a{background:var(--warnbg);color:var(--warn)} .st.r{background:var(--badbg);color:var(--bad)} .st.f{background:var(--infobg);color:var(--info)}
+  .svcmeta{font-size:11.5px;color:var(--muted);margin-top:4px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+  .svcmeta .proc b{color:var(--ink);}
+  .dd{margin-top:10px;border-top:1px dashed var(--line);padding-top:9px;display:none;}
+  .dd.show{display:block;}
+  .destrow{display:flex;align-items:center;gap:10px;font-size:12px;margin-bottom:6px;}
+  .destrow .dn{width:180px;color:var(--ink);}
+  .dtrack{flex:1;height:9px;background:#eef1f6;border-radius:5px;overflow:hidden;}
+  .dfill{height:100%;border-radius:5px;}
+  .destrow .dv{width:52px;text-align:right;font-variant-numeric:tabular-nums;color:var(--muted);}
+  .svcbtns{margin-top:9px;display:flex;gap:8px;flex-wrap:wrap;}
+  .mini{font-size:11.5px;padding:6px 11px;border-radius:8px;border:1px solid var(--line);background:#fff;cursor:pointer;font-weight:600;color:var(--ink);}
+  .mini:hover{border-color:var(--brand);color:var(--brand);}
+  .mini.d{opacity:.45;cursor:not-allowed;}
+
+  .chartwrap{font-size:12px;}
+  .chartwrap .sel{color:var(--muted);margin-bottom:8px;}
+  .chartwrap .sel b{color:var(--ink);}
+  svg{width:100%;height:auto;display:block;}
+  .legend{display:flex;gap:16px;font-size:11px;color:var(--muted);margin-top:8px;flex-wrap:wrap;}
+  .legend span{display:inline-flex;align-items:center;gap:5px;}
+  .lk{width:14px;height:0;border-top:2px solid;}
+  .foot{color:var(--muted);font-size:11.5px;margin-top:6px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>Processor Health &amp; Failover Console</h1>
+    <p>Real-time success-rate monitoring for every processor and the MNO wallets and banks it serves — with drill-down, an hourly trend, ops-set alert &amp; failover thresholds, and an automated backup-switch proposal (with funding check) that ops can authorise, override, or trigger manually.</p>
+  </header>
+
+  <div class="controls">
+    <div class="live"><span class="dot" id="liveDot"></span><span id="liveTxt">Live</span></div>
+    <span class="clock" id="clock">—</span>
+    <div class="ctl">Alert &lt; <input id="thAlert" type="number" value="95" step="1">%</div>
+    <div class="ctl">Failover &lt; <input id="thFail" type="number" value="85" step="1">%</div>
+    <span class="spacer"></span>
+    <button class="btn warn" onclick="simulate()">⚡ Simulate incident (Kenya bank payout)</button>
+    <button class="btn" onclick="toggleLive()" id="pauseBtn">⏸ Pause</button>
+    <button class="btn" onclick="resetAll()">↺ Reset</button>
+  </div>
+
+  <div class="alerts" id="alerts"></div>
+
+  <div class="layout">
+    <div>
+      <div class="card">
+        <h2>Services &amp; processors — live</h2>
+        <div id="svcs"></div>
+      </div>
+    </div>
+    <div>
+      <div class="card chartwrap">
+        <h2>Hourly success rate</h2>
+        <div class="sel" id="chartSel">—</div>
+        <div id="chart"></div>
+        <div class="legend">
+          <span><span class="lk" style="border-color:var(--brand)"></span> Success rate</span>
+          <span><span class="lk" style="border-color:var(--warn);border-top-style:dashed"></span> Alert threshold</span>
+          <span><span class="lk" style="border-color:var(--bad);border-top-style:dashed"></span> Failover threshold</span>
+        </div>
+        <p class="foot" id="chartFoot"></p>
+      </div>
+      <div class="card">
+        <h2>How to read this</h2>
+        <p class="foot" style="font-size:12px;line-height:1.6">Click a service to <b>drill into its MNOs / banks</b> and chart it. Press <b>Simulate incident</b> to drive the Kenya bank-payout service down: it will cross the <b>alert</b> threshold (amber, review), then the <b>failover</b> threshold (red), at which point the system checks for a funded backup processor and <b>proposes a switch</b> you can authorise or override. You can also switch any service manually.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===================== DATA =====================
+const PROCS = {
+  'swift-ke':{name:'SwiftRails KE', funded:true,  bal:48000},
+  'pesa-ke' :{name:'PesaLink KE',   funded:true,  bal:32000},
+  'nova-ke' :{name:'NovaRails KE',  funded:true,  bal:61000},
+  'swift-ng':{name:'SwiftRails NG', funded:true,  bal:55000},
+  'nova-ng' :{name:'NovaRails NG',  funded:false, bal:1200},  // underfunded backup
+  'pesa-ng' :{name:'PesaLink NG',   funded:true,  bal:40000},
+};
+function mkDests(list){ return list.map(d=>({name:d[0], kind:d[1], w:d[2], rate:97+Math.random()*2, base:97+Math.random()*1.5})); }
+let services, incidentOn, incidentRamp, tickN, selId, live, timer;
+
+function seedHistory(base){ const h=[]; for(let i=0;i<12;i++) h.push(+(base - 1 + Math.random()*2).toFixed(1)); return h; }
+
+function initState(){
+  services = [
+    {id:'ke-pay-mm', country:'Kenya', type:'Payout', method:'Mobile money', primary:'swift-ke', backup:'pesa-ke', active:'primary',
+      dests:mkDests([['M-Pesa','mno',0.7],['Airtel Money','mno',0.3]]), dismiss:0},
+    {id:'ke-pay-bank', country:'Kenya', type:'Payout', method:'Bank account', primary:'swift-ke', backup:'nova-ke', active:'primary',
+      dests:mkDests([['UBA Kenya Bank Limited','bank',0.45],['Ecobank Kenya Limited','bank',0.35],['Equity Bank Kenya','bank',0.2]]), dismiss:0},
+    {id:'ng-pay-mm', country:'Nigeria', type:'Payout', method:'Mobile money', primary:'pesa-ng', backup:null, active:'primary',
+      dests:mkDests([['MTN MoMo','mno',0.6],['Airtel Money','mno',0.4]]), dismiss:0},
+    {id:'ng-dep-bank', country:'Nigeria', type:'Deposit', method:'Bank account', primary:'swift-ng', backup:'nova-ng', active:'primary',
+      dests:mkDests([['GTBank','bank',0.5],['Access Bank','bank',0.5]]), dismiss:0},
+  ];
+  services.forEach(s=>{ s.overall=overall(s); s.history=seedHistory(s.overall); });
+  incidentOn=false; incidentRamp=0; tickN=0; selId='ke-pay-bank'; live=true;
+}
+function overall(s){ let n=0,d=0; s.dests.forEach(x=>{n+=x.rate*x.w; d+=x.w;}); return +(n/d).toFixed(1); }
+function activeProc(s){ return s.active==='primary'? s.primary : s.backup; }
+
+// ===================== SIMULATION =====================
+function step(){
+  tickN++;
+  services.forEach(s=>{
+    const incidentTarget = incidentOn && s.id==='ke-pay-bank' && s.active==='primary';
+    s.dests.forEach(x=>{
+      let target = x.base;
+      if(incidentTarget){ target = 62 + Math.random()*6; }          // drive down during incident
+      else if(s.active==='backup'){ target = 97 + Math.random()*1.8; } // backup is healthy
+      // ease toward target + noise
+      x.rate += (target - x.rate)*0.5 + (Math.random()-0.5)*1.2;
+      x.rate = Math.max(40, Math.min(99.9, x.rate));
+    });
+    s.overall = overall(s);
+    s.history.push(s.overall); if(s.history.length>12) s.history.shift();
+  });
+  render();
+}
+function simulate(){ incidentOn=true; selId='ke-pay-bank'; if(!live) toggleLive(); render(); }
+function resetAll(){ clearInterval(timer); initState(); start(); }
+
+// ===================== EVALUATION =====================
+function statusOf(s){
+  const a=+thAlert.value, f=+thFail.value;
+  if(s.active==='backup') return 'f';          // failed over
+  if(s.overall < f) return 'r';
+  if(s.overall < a) return 'a';
+  return 'g';
+}
+function buildAlerts(){
+  const a=+thAlert.value, f=+thFail.value, out=[];
+  services.forEach(s=>{
+    if(s.active==='backup'){
+      out.push({cls:'ok', b:`${label(s)} — routing via backup (${PROCS[s.backup].name})`, sub:`Switched off the primary after it breached the failover threshold. Success rate recovered to ${s.overall}%.`, cta:[{t:'Switch back to primary', f:`switchTo('${s.id}','primary')`}]});
+      return;
+    }
+    if(s.overall < f){
+      // critical — attempt failover
+      if(s.backup && PROCS[s.backup].funded){
+        if(s.dismiss>tickN){ out.push({cls:'crit', b:`${label(s)} — CRITICAL at ${s.overall}% (proposal overridden)`, sub:`Below failover threshold (${f}%). You chose to stay on ${PROCS[s.primary].name}. Monitoring.`, cta:[{t:'Switch to backup now', f:`switchTo('${s.id}','backup')`}]}); }
+        else { out.push({cls:'prop', b:`Failover proposed — ${label(s)}`, sub:`Success rate ${s.overall}% is below the ${f}% failover threshold. Backup <b>${PROCS[s.backup].name}</b> is available <span class="fund ok">Funded · $${PROCS[s.backup].bal.toLocaleString()}</span>. Authorise to reroute transactions.`, cta:[{t:'✓ Authorise switch', p:true, f:`switchTo('${s.id}','backup')`},{t:'Keep current', f:`dismiss('${s.id}')`}]}); }
+      } else if(s.backup && !PROCS[s.backup].funded){
+        out.push({cls:'crit', b:`${label(s)} — CRITICAL at ${s.overall}%, backup underfunded`, sub:`Below failover threshold. Backup <b>${PROCS[s.backup].name}</b> is <span class="fund no">Not adequately funded · $${PROCS[s.backup].bal.toLocaleString()}</span> — auto-switch blocked. Manual intervention required.`, cta:[]});
+      } else {
+        out.push({cls:'crit', b:`${label(s)} — CRITICAL at ${s.overall}%, no backup configured`, sub:`Below failover threshold and no backup processor is configured for this service. Manual intervention required.`, cta:[]});
+      }
+    } else if(s.overall < a){
+      out.push({cls:'warn', b:`${label(s)} degraded — ${s.overall}%`, sub:`Below the ${a}% alert threshold. Team notified to review ${PROCS[activeProc(s)].name}.`, cta:[]});
+    }
+  });
+  return out;
+}
+function label(s){ return `${s.country} · ${s.type} · ${s.method}`; }
+
+// ===================== ACTIONS =====================
+function switchTo(id, which){
+  const s=services.find(x=>x.id===id); if(!which){which=s.active==='primary'?'backup':'primary';}
+  if(which==='backup' && !s.backup) return;
+  s.active=which;
+  if(which==='primary' && s.id==='ke-pay-bank') incidentOn=false; // manual recovery clears incident
+  s.dests.forEach(x=>{ x.rate = 97+Math.random()*1.8; });
+  s.overall=overall(s); render();
+}
+function dismiss(id){ const s=services.find(x=>x.id===id); s.dismiss=tickN+9999; render(); } // keep current until manual
+function selectSvc(id){ selId=id; render(); }
+function toggleDrill(id, ev){ ev.stopPropagation(); const el=document.getElementById('dd-'+id); el.classList.toggle('show'); }
+
+// ===================== RENDER =====================
+function render(){
+  document.getElementById('clock').textContent = new Date().toLocaleTimeString();
+  // alerts
+  const al=buildAlerts();
+  document.getElementById('alerts').innerHTML = al.length? al.map(x=>`
+    <div class="alert ${x.cls}">
+      <div class="atext"><b>${x.b}</b><span class="asub">${x.sub}</span></div>
+      <div class="acta">${x.cta.map(c=>`<button class="btn ${c.p?'p':''}" onclick="${c.f}">${c.t}</button>`).join('')}</div>
+    </div>`).join('') : `<div class="alert ok"><div class="atext"><b>All services healthy</b><span class="asub">Every service is above its alert threshold. Monitoring in real time.</span></div></div>`;
+
+  // services
+  document.getElementById('svcs').innerHTML = services.map(s=>{
+    const st=statusOf(s), rc={g:'g',a:'a',r:'r',f:'g'}[st];
+    const stTxt={g:'Healthy',a:'Degraded',r:'Critical',f:'Failed over'}[st];
+    const dd = s.dests.map(x=>{
+      const c = x.rate>=+thAlert.value?'var(--ok)':(x.rate>=+thFail.value?'var(--warn)':'var(--bad)');
+      return `<div class="destrow"><div class="dn">${x.name}</div><div class="dtrack"><div class="dfill" style="width:${x.rate}%;background:${c}"></div></div><div class="dv">${x.rate.toFixed(1)}%</div></div>`;
+    }).join('');
+    const canSwitch = !!s.backup;
+    const toBackup = s.active==='primary';
+    return `<div class="svc ${s.id===selId?'sel':''}">
+      <div class="svchead" onclick="selectSvc('${s.id}')">
+        <div class="nm">${label(s)}</div>
+        <div class="rate ${rc}">${s.overall.toFixed(1)}%</div>
+        <div class="st ${st}">${stTxt}</div>
+      </div>
+      <div class="svcmeta">
+        <span class="proc">Active: <b>${PROCS[activeProc(s)].name}</b>${s.backup?` · backup: ${PROCS[s.backup].name}${PROCS[s.backup].funded?'':' (underfunded)'}`:' · no backup'}</span>
+        <span><a style="cursor:pointer;color:var(--brand);font-weight:600" onclick="toggleDrill('${s.id}',event)">Drill down ▾</a></span>
+      </div>
+      <div class="dd" id="dd-${s.id}">${dd}</div>
+      <div class="svcbtns">
+        <button class="mini ${canSwitch?'':'d'}" ${canSwitch?`onclick="switchTo('${s.id}','${toBackup?'backup':'primary'}')"`:''}>${canSwitch?(toBackup?'Switch to backup':'Switch to primary'):'No backup configured'}</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  renderChart();
+}
+function renderChart(){
+  const s=services.find(x=>x.id===selId);
+  document.getElementById('chartSel').innerHTML = `Service: <b>${label(s)}</b> · active ${PROCS[activeProc(s)].name}`;
+  const W=460,H=190,pad=30, lo=55, hi=100;
+  const a=+thAlert.value, f=+thFail.value;
+  const x=i=> pad + i*(W-pad-8)/(s.history.length-1);
+  const y=v=> pad/2 + (H-pad-pad/2) * (1-(v-lo)/(hi-lo));
+  const pts=s.history.map((v,i)=>`${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+  const yline=v=>`<line x1="${pad}" x2="${W-4}" y1="${y(v)}" y2="${y(v)}" stroke="${v===a?'var(--warn)':'var(--bad)'}" stroke-width="1.2" stroke-dasharray="4 3" opacity=".7"/>`;
+  const gl=[60,70,80,90,100].map(v=>`<line x1="${pad}" x2="${W-4}" y1="${y(v)}" y2="${y(v)}" stroke="#eef1f6" stroke-width="1"/><text x="2" y="${y(v)+3}" font-size="9" fill="#9aa2b1">${v}</text>`).join('');
+  const last=s.history[s.history.length-1];
+  const lc = last>=a?'var(--ok)':(last>=f?'var(--warn)':'var(--bad)');
+  document.getElementById('chart').innerHTML = `
+    <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">
+      ${gl}${yline(a)}${yline(f)}
+      <polyline points="${pts}" fill="none" stroke="var(--brand)" stroke-width="2.4" stroke-linejoin="round"/>
+      <circle cx="${x(s.history.length-1)}" cy="${y(last)}" r="4.5" fill="${lc}"/>
+      ${s.history.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="2" fill="var(--brand)" opacity=".5"/>`).join('')}
+    </svg>`;
+  document.getElementById('chartFoot').textContent = `Last 12 hours. Current ${last.toFixed(1)}% · alert ${a}% · failover ${f}%. Rightmost point updates live.`;
+}
+
+// ===================== LIVE LOOP =====================
+function toggleLive(){
+  live=!live;
+  document.getElementById('liveDot').classList.toggle('off',!live);
+  document.getElementById('liveTxt').textContent=live?'Live':'Paused';
+  document.getElementById('pauseBtn').textContent=live?'⏸ Pause':'▶ Resume';
+  clearInterval(timer); if(live) timer=setInterval(step,2500);
+}
+function start(){ render(); clearInterval(timer); timer=setInterval(step,2500);
+  document.getElementById('liveDot').classList.remove('off');
+  document.getElementById('liveTxt').textContent='Live'; document.getElementById('pauseBtn').textContent='⏸ Pause'; }
+['thAlert','thFail'].forEach(id=>window.addEventListener('DOMContentLoaded',()=>{}));
+initState(); start();
+document.getElementById('thAlert').addEventListener('input',render);
+document.getElementById('thFail').addEventListener('input',render);
+</script>
+</body>
+</html>

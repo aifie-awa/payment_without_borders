@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Processor Health &amp; Failover — Architecture</title>
+<style>
+  :root{
+    --brand:#5B3DF5;--brand-dark:#3F27C4;--brand-soft:#EEEAFE;
+    --ink:#14121F;--muted:#6B6880;--line:#E2DEEF;--bg:#eef2f5;--card:#fff;
+    --ok:#0F9D58;--bad:#D23B32;--warn:#B9771A;
+    --s1:#efeafe;--s2:#eaf1fb;--s3:#fdf2e6;--s4:#fdeef0;--s5:#eaf7f0;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;}
+  .page{width:1180px;max-width:100%;margin:0 auto;background:#fff;padding:26px 30px 24px;}
+  header{border-bottom:3px solid var(--brand);padding-bottom:12px;margin-bottom:10px;}
+  h1{margin:0 0 3px;font-size:22px;letter-spacing:-.01em;}
+  .sub{margin:0;color:var(--muted);font-size:12.5px;}
+  .flow{display:grid;grid-template-columns:repeat(5,1fr);gap:0;align-items:stretch;margin-top:18px;}
+  .stage{position:relative;padding:0 9px;}
+  .stagehead{font-size:9.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--brand);text-align:center;margin-bottom:8px;}
+  .box{border:1px solid var(--line);border-radius:10px;padding:10px 11px;margin-bottom:9px;}
+  .box .t{font-size:12px;font-weight:700;margin-bottom:3px;}
+  .box .d{font-size:10.5px;color:var(--muted);line-height:1.42;}
+  .s1 .box{background:var(--s1)} .s2 .box{background:var(--s2)} .s3 .box{background:var(--s3)} .s4 .box{background:var(--s4)} .s5 .box{background:var(--s5)}
+  .arrow{position:absolute;top:50%;right:-7px;width:13px;height:13px;transform:translateY(-50%) rotate(45deg);border-top:2px solid var(--brand);border-right:2px solid var(--brand);z-index:2;}
+  .fo{margin-top:16px;border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+  .fo .fh{background:var(--ink);color:#fff;padding:8px 14px;font-size:12px;font-weight:700;}
+  .fo .fb{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;padding:13px 15px;}
+  .step{border:1px solid var(--line);border-radius:9px;padding:9px 10px;background:#fafbff;position:relative;}
+  .step .n{font-size:9px;font-weight:800;color:var(--brand);letter-spacing:.4px;}
+  .step .st{font-size:11px;font-weight:700;margin:2px 0;}
+  .step .sd{font-size:9.5px;color:var(--muted);line-height:1.35;}
+  .cards2{margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media(max-width:820px){.cards2{grid-template-columns:1fr}}
+  .card2{border:1px solid var(--line);border-radius:12px;padding:12px 15px;}
+  .card2 h3{margin:0 0 8px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--brand);}
+  .thr{display:flex;align-items:flex-start;gap:9px;font-size:11.5px;margin-bottom:7px;}
+  .thr .sw{width:11px;height:11px;border-radius:3px;flex:none;margin-top:2px;}
+  .thr b{color:var(--ink);}
+  .prin li{font-size:11.5px;line-height:1.5;margin-bottom:5px;}
+  .prin ul{margin:0;padding-left:16px;}
+  footer{margin-top:16px;font-size:10.5px;color:var(--muted);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+  .tag{background:var(--brand);color:#fff;border-radius:20px;padding:3px 11px;font-size:10px;}
+  @media print{html,body{background:#fff}.page{width:100%;padding:0}@page{size:A4 landscape;margin:10mm}}
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <h1>Processor Health &amp; Failover — System Architecture</h1>
+    <p class="sub">From live transaction telemetry to an automated, ops-authorised switch onto a funded backup processor — monitored down to each MNO wallet and bank.</p>
+  </header>
+
+  <div class="flow">
+    <div class="stage s1">
+      <div class="stagehead">Telemetry</div>
+      <div class="box"><div class="t">Transaction events</div><div class="d">Every attempt tagged with processor, service (country × type × method) and destination (MNO wallet or bank).</div></div>
+      <div class="box"><div class="t">Stream / collector</div><div class="d">Events aggregated continuously into success/failure counts per dimension.</div></div>
+      <div class="arrow"></div>
+    </div>
+    <div class="stage s2">
+      <div class="stagehead">Health engine</div>
+      <div class="box"><div class="t">Success-rate calc</div><div class="d">Rolling success rate per processor, and drill-down per MNO / bank, on an hourly window.</div></div>
+      <div class="box"><div class="t">Trend store</div><div class="d">Hourly history retained to power the live chart and spot degradation early.</div></div>
+      <div class="arrow"></div>
+    </div>
+    <div class="stage s3">
+      <div class="stagehead">Thresholds &amp; alerting</div>
+      <div class="box"><div class="t">Alert threshold</div><div class="d">Below it → notify the ops team to review (degraded).</div></div>
+      <div class="box"><div class="t">Failover threshold</div><div class="d">A lower bar → trigger the failover evaluation (critical).</div></div>
+      <div class="arrow"></div>
+    </div>
+    <div class="stage s4">
+      <div class="stagehead">Failover orchestration</div>
+      <div class="box"><div class="t">Backup lookup</div><div class="d">Is a backup processor configured for this exact service?</div></div>
+      <div class="box"><div class="t">Funding check</div><div class="d">Is the backup adequately funded to absorb the volume?</div></div>
+      <div class="box"><div class="t">Proposal to ops</div><div class="d">If yes → propose a switch for authorisation; if underfunded / none → escalate for manual action.</div></div>
+      <div class="arrow"></div>
+    </div>
+    <div class="stage s5">
+      <div class="stagehead">Routing</div>
+      <div class="box"><div class="t">Authorise / override</div><div class="d">Ops authorises the switch, overrides to stay, or switches manually at any time.</div></div>
+      <div class="box"><div class="t">Reroute</div><div class="d">On authorisation, traffic for that service routes through the backup; the switch and its author are logged.</div></div>
+    </div>
+  </div>
+
+  <div class="fo">
+    <div class="fh">Failover decision sequence</div>
+    <div class="fb">
+      <div class="step"><div class="n">1</div><div class="st">Rate &lt; failover threshold</div><div class="sd">Service breaches the lower bar — enter critical.</div></div>
+      <div class="step"><div class="n">2</div><div class="st">Backup configured?</div><div class="sd">No → escalate for manual intervention.</div></div>
+      <div class="step"><div class="n">3</div><div class="st">Backup funded?</div><div class="sd">No → block auto-switch, alert ops to fund or act manually.</div></div>
+      <div class="step"><div class="n">4</div><div class="st">Propose switch</div><div class="sd">Funded → present authorise / keep-current to ops.</div></div>
+      <div class="step"><div class="n">5</div><div class="st">Execute &amp; log</div><div class="sd">On authorise, reroute to backup; recovery monitored.</div></div>
+    </div>
+  </div>
+
+  <div class="cards2">
+    <div class="card2">
+      <h3>Monitoring hierarchy &amp; thresholds</h3>
+      <div class="thr"><span class="sw" style="background:var(--ok)"></span><div><b>Healthy</b> — above the alert threshold. Normal routing.</div></div>
+      <div class="thr"><span class="sw" style="background:var(--warn)"></span><div><b>Degraded</b> — below alert, above failover. Team notified to review.</div></div>
+      <div class="thr"><span class="sw" style="background:var(--bad)"></span><div><b>Critical</b> — below failover. Failover evaluation runs.</div></div>
+      <div class="thr"><span class="sw" style="background:var(--brand)"></span><div><b>Failed over</b> — now routing via a funded backup after authorisation.</div></div>
+      <p style="font-size:11px;color:var(--muted);margin:8px 0 0">Drill-down: <b>Processor → service (country × type × method) → destination (MNO wallet / bank)</b>, e.g. Kenya bank payout → UBA Kenya, Ecobank Kenya.</p>
+    </div>
+    <div class="card2 prin">
+      <h3>Design principles</h3>
+      <ul>
+        <li><b>Two thresholds, two responses.</b> One to tell a human to look; a lower one to act. They are not the same bar.</li>
+        <li><b>Automate the detection, keep a human on the switch.</b> The system proposes; ops authorises or overrides — with a manual switch always available.</li>
+        <li><b>Never fail over to a processor that can't take it.</b> The funding check is a hard gate before any proposal.</li>
+        <li><b>Drill-down is the diagnosis.</b> A processor looks "80%" because one bank is failing — the destination view shows which.</li>
+      </ul>
+    </div>
+  </div>
+
+  <footer>
+    <div><b>Primary objective:</b> catch a failing processor, MNO or bank in real time and reroute to a funded backup — fast, with ops in control.</div>
+    <div class="tag">Real-time · threshold-driven · human-authorised failover</div>
+  </footer>
+</div>
+</body>
+</html>
